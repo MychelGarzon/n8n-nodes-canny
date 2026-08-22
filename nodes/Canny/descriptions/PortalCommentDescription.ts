@@ -14,7 +14,7 @@ export const portalCommentOperations: INodeProperties[] = [
 			show: { resource: ['portalComment'] },
 		},
 		options: [
-			{ name: 'Get Many', value: 'getAll', action: 'Get many portalComments' },
+			{ name: 'Get Many', value: 'getAll', action: 'Get many portal comments' },
 		],
 		default: 'getAll',
 	},
