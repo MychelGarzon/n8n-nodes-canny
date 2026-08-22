@@ -1,24 +1,35 @@
 {
-  "name": "n8n-nodes-cronitor",
+  "name": "n8n-nodes-canny",
   "version": "0.1.0",
-  "description": "n8n community node for Cronitor (monitoring, telemetry, heartbeat checks). In active development.",
+  "description": "n8n community node for Canny (canny.io) — product feedback, feature requests, and roadmap management. Not affiliated with Canny Inc.",
   "keywords": [
-    "n8n-community-node-package"
+    "n8n-community-node-package",
+    "canny",
+    "feedback",
+    "roadmap"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/YOUR-GITHUB-USERNAME/n8n-nodes-cronitor",
+  "homepage": "https://github.com/MychelGarzon/n8n-nodes-canny",
   "author": {
-    "name": "YOUR NAME",
-    "email": "YOUR-EMAIL@example.com"
+    "name": "Mychel Garzon",
+    "email": "REPLACE_WITH_EMAIL"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/YOUR-GITHUB-USERNAME/n8n-nodes-cronitor.git"
+    "url": "https://github.com/MychelGarzon/n8n-nodes-canny.git"
+  },
+  "engines": {
+    "node": ">=18.10",
+    "pnpm": ">=8"
   },
   "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch"
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier nodes credentials --write",
+    "lint": "eslint nodes credentials package.json",
+    "lintfix": "eslint nodes credentials package.json --fix",
+    "prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
   },
   "files": [
     "dist"
@@ -26,15 +37,20 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/CronitorApi.credentials.js"
+      "dist/credentials/CannyApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/Cronitor/Cronitor.node.js"
+      "dist/nodes/Canny/Canny.node.js",
+      "dist/nodes/CannyTrigger/CannyTrigger.node.js"
     ]
   },
   "devDependencies": {
-    "typescript": "^5.4.0",
-    "n8n-workflow": "*"
+    "@typescript-eslint/parser": "^7.15.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.1",
+    "gulp": "^4.0.2",
+    "n8n-workflow": "*",
+    "prettier": "^3.3.2",
+    "typescript": "^5.5.3"
   },
   "peerDependencies": {
     "n8n-workflow": "*"
