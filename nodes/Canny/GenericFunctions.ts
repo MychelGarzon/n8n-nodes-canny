@@ -46,6 +46,7 @@ export interface RequestParams {
   endpoint: string;
   body: IDataObject;
   responseKey?: string;
+  paginationStyle?: "skip" | "cursor";
 }
 
 function buildPostRequest(
@@ -85,6 +86,161 @@ function buildPostRequest(
   );
 }
 
+function buildBoardRequest(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): RequestParams {
+  if (operation === "get") {
+    const boardID = this.getNodeParameter("boardID", i) as string;
+    return { endpoint: "/boards/retrieve", body: { id: boardID } };
+  }
+  if (operation === "getAll") {
+    return { endpoint: "/boards/list", body: {}, responseKey: "boards" };
+  }
+
+  throw new NodeOperationError(
+    this.getNode(),
+    `The board operation "${operation}" is not recognized.`,
+    {
+      itemIndex: i,
+      description:
+        "Select a valid 'Operation' from the dropdown menu to continue.",
+    },
+  );
+}
+
+function buildCategoryRequest(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): RequestParams {
+  if (operation === "get") {
+    const categoryID = this.getNodeParameter("categoryID", i) as string;
+    return { endpoint: "/categories/retrieve", body: { id: categoryID } };
+  }
+  if (operation === "getAll") {
+    const boardID = this.getNodeParameter("boardID", i, "") as string;
+    const body: IDataObject = {};
+    if (boardID) body.boardID = boardID;
+    return { endpoint: "/categories/list", body, responseKey: "categories" };
+  }
+  if (operation === "create") {
+    const boardID = this.getNodeParameter("boardID", i) as string;
+    const name = this.getNodeParameter("name", i) as string;
+    const parentID = this.getNodeParameter("parentID", i, "") as string;
+    const subscribeAdmins = this.getNodeParameter(
+      "subscribeAdmins",
+      i,
+      false,
+    ) as boolean;
+    const body: IDataObject = { boardID, name, subscribeAdmins };
+    if (parentID) body.parentID = parentID;
+    return { endpoint: "/categories/create", body };
+  }
+  if (operation === "delete") {
+    const categoryID = this.getNodeParameter("categoryID", i) as string;
+    return { endpoint: "/categories/delete", body: { categoryID } };
+  }
+
+  throw new NodeOperationError(
+    this.getNode(),
+    `The category operation "${operation}" is not recognized.`,
+    {
+      itemIndex: i,
+      description:
+        "Select a valid 'Operation' from the dropdown menu to continue.",
+    },
+  );
+}
+
+function buildPortalCommentRequest(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): RequestParams {
+  if (operation === "get") {
+    const commentID = this.getNodeParameter("commentID", i) as string;
+    return { endpoint: "/comments/retrieve", body: { id: commentID } };
+  }
+  if (operation === "getAll") {
+    const postID = this.getNodeParameter("postID", i, "") as string;
+    const boardID = this.getNodeParameter("boardID", i, "") as string;
+    const body: IDataObject = {};
+    if (postID) body.postID = postID;
+    if (boardID) body.boardID = boardID;
+    return {
+      endpoint: "/comments/list",
+      body,
+      responseKey: "items",
+      paginationStyle: "cursor",
+    };
+  }
+  if (operation === "create") {
+    const postID = this.getNodeParameter("postID", i) as string;
+    const authorID = this.getNodeParameter("authorID", i) as string;
+    const value = this.getNodeParameter("value", i, "") as string;
+    const parentID = this.getNodeParameter("parentID", i, "") as string;
+    const internal = this.getNodeParameter("internal", i, false) as boolean;
+    const body: IDataObject = { postID, authorID, internal };
+    if (value) body.value = value;
+    if (parentID) body.parentID = parentID;
+    return { endpoint: "/comments/create", body };
+  }
+  if (operation === "delete") {
+    const commentID = this.getNodeParameter("commentID", i) as string;
+    return { endpoint: "/comments/delete", body: { commentID } };
+  }
+
+  throw new NodeOperationError(
+    this.getNode(),
+    `The portal comment operation "${operation}" is not recognized.`,
+    {
+      itemIndex: i,
+      description:
+        "Select a valid 'Operation' from the dropdown menu to continue.",
+    },
+  );
+}
+
+function buildIdeaRequest(
+  this: IExecuteFunctions,
+  operation: string,
+  i: number,
+): RequestParams {
+  if (operation === "get") {
+    const ideaID = this.getNodeParameter("ideaID", i) as string;
+    return { endpoint: "/ideas/retrieve", body: { id: ideaID } };
+  }
+  if (operation === "getAll") {
+    const search = this.getNodeParameter("search", i, "") as string;
+    const parentID = this.getNodeParameter("parentID", i, "") as string;
+    const body: IDataObject = {};
+    if (search) body.search = search;
+    if (parentID) body.parentID = parentID;
+    return {
+      endpoint: "/ideas/list",
+      body,
+      responseKey: "items",
+      paginationStyle: "cursor",
+    };
+  }
+  if (operation === "delete") {
+    const ideaID = this.getNodeParameter("ideaID", i) as string;
+    return { endpoint: "/ideas/delete", body: { id: ideaID } };
+  }
+
+  throw new NodeOperationError(
+    this.getNode(),
+    `The idea operation "${operation}" is not recognized.`,
+    {
+      itemIndex: i,
+      description:
+        "Select a valid 'Operation' from the dropdown menu to continue.",
+    },
+  );
+}
+
 export function buildRequestParams(
   this: IExecuteFunctions,
   resource: string,
@@ -92,6 +248,12 @@ export function buildRequestParams(
   i: number,
 ): RequestParams {
   if (resource === "post") return buildPostRequest.call(this, operation, i);
+  if (resource === "board") return buildBoardRequest.call(this, operation, i);
+  if (resource === "category")
+    return buildCategoryRequest.call(this, operation, i);
+  if (resource === "portalComment")
+    return buildPortalCommentRequest.call(this, operation, i);
+  if (resource === "idea") return buildIdeaRequest.call(this, operation, i);
 
   throw new NodeOperationError(
     this.getNode(),
@@ -141,6 +303,50 @@ export async function fetchPaginated(
 
     if (!returnAll && collected.length >= limit) break;
   } while (hasMore);
+
+  return returnAll ? collected : collected.slice(0, limit);
+}
+
+export async function fetchPaginatedCursor(
+  this: IExecuteFunctions,
+  endpoint: string,
+  body: IDataObject,
+  responseKey: string,
+  i: number,
+): Promise<IDataObject[]> {
+  const returnAll = this.getNodeParameter("returnAll", i, false) as boolean;
+  const limit = this.getNodeParameter("limit", i, 50) as number;
+  const pageSize = returnAll ? 100 : Math.min(limit, 100);
+
+  const collected: IDataObject[] = [];
+  let cursor: string | undefined;
+  let hasNextPage = true;
+
+  do {
+    await respectRateLimit();
+
+    const requestBody: IDataObject = { ...body, limit: pageSize };
+    if (cursor) requestBody.cursor = cursor;
+
+    const response = await requestWithErrorHandling.call(
+      this,
+      {
+        method: "POST",
+        url: `${BASE_URL}${endpoint}`,
+        body: requestBody,
+        json: true,
+      },
+      i,
+    );
+
+    const pageData =
+      (response[responseKey] as IDataObject[] | undefined) ?? [];
+    collected.push(...pageData);
+    hasNextPage = Boolean(response.hasNextPage);
+    cursor = response.cursor as string | undefined;
+
+    if (!returnAll && collected.length >= limit) break;
+  } while (hasNextPage && cursor);
 
   return returnAll ? collected : collected.slice(0, limit);
 }

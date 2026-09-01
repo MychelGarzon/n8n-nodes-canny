@@ -12,6 +12,7 @@ import { NodeApiError, NodeConnectionTypes } from "n8n-workflow";
 import {
   buildRequestParams,
   fetchPaginated,
+  fetchPaginatedCursor,
   fetchSingle,
   PAGINATED_OPERATIONS,
 } from "./GenericFunctions";
