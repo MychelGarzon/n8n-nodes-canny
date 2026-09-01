@@ -37,7 +37,7 @@ export const boardFields: INodeProperties[] = [
 		displayOptions: {
 			show: { resource: ['board'], operation: ['getAll'] },
 		},
-		description: 'Whether to return all results or only up to a given limit. Canny\'s boards/list endpoint does not paginate — this only controls client-side truncation.',
+		description: 'Whether to return all results or only up to a given limit',
 	},
 	{
 		displayName: 'Limit',

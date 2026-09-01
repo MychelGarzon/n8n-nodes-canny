@@ -1,8 +1,8 @@
 # n8n-nodes-canny
 
-This is an n8n community node. It lets you use _app/service name_ in your n8n workflows.
+This is an n8n community node. It lets you use [Canny](https://canny.io/) in your n8n workflows.
 
-_App/service name_ is _one or two sentences describing the service this node integrates with_.
+Canny is a product feedback and feature-request management tool. It lets teams collect feedback from users, organize it into boards and categories, track votes and comments, and publish public roadmaps.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/sustainable-use-license/) workflow automation platform.
 
@@ -20,27 +20,68 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 
 ## Operations
 
-_List the operations supported by your node._
+### Post
+- Create
+- Get
+- Get Many
+
+### Board
+- Get
+- Get Many
+
+### Category
+- Get
+- Get Many
+- Create
+- Delete
+
+### Idea
+- Get
+- Get Many
+- Delete
+
+### Portal Comment
+- Get
+- Get Many
+- Create
+- Delete
+
+**Not yet supported:** Post Update/Delete/Change Status, Idea filtering and sort, Idea Merge. These may be added in a future version.
 
 ## Credentials
 
-_If users need to authenticate with the app/service, provide details here. You should include prerequisites (such as signing up with the service), available authentication methods, and how to set them up._
+You'll need a Canny account with API access:
+
+1. Sign up for a free Canny account at [canny.io](https://canny.io/) if you don't already have one.
+2. In your Canny dashboard, go to **Settings > API**.
+3. Copy your **Secret API Key**.
+4. In n8n, create a new **Canny API** credential and paste the key into the **API Key** field.
+
+Canny's API expects the key as a field in the request body rather than a header — this credential handles that automatically.
 
 ## Compatibility
 
-_State the minimum n8n version, as well as which versions you test against. You can also include any known version incompatibility issues._
+Tested against n8n using n8n-workflow's programmatic node style (`@n8n/node-cli`). No known version incompatibilities.
 
 ## Usage
 
-_This is an optional section. Use it to help users with any difficult or confusing aspects of the node._
+Canny's API has two different pagination styles depending on the resource:
 
-_By the time users are looking for community nodes, they probably already know n8n basics. But if you expect new users, you can link to the [Try it out](https://docs.n8n.io/try-it-out/) documentation to help them get started._
+- **Post, Category** use skip-based pagination (`skip`/`limit`/`hasMore`).
+- **Portal Comment, Idea** use cursor-based pagination (`cursor`/`hasNextPage`).
+
+This node handles both automatically — just use the **Return All** and **Limit** fields on any "Get Many" operation.
+
+**Board** has no server-side pagination at all; "Get Many" always returns your full list of boards in a single request.
+
+For general help getting started with n8n, see the [Try it out](https://docs.n8n.io/try-it-out/) documentation.
 
 ## Resources
 
 * [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-* _Link to app/service documentation._
+* [Canny API reference](https://developers.canny.io/api-reference)
 
 ## Version history
 
-_This is another optional section. If your node has multiple versions, include a short description of available versions and what changed, as well as any compatibility impact._
+### 0.1.0
+Initial release. Supports Post (Create/Get/Get Many), Board (Get/Get Many), Category (Get/Get Many/Create/Delete), Idea (Get/Get Many/Delete), and Portal Comment (Get/Get Many/Create/Delete). Canny Trigger node included as a manual-setup webhook receiver — payload signature verification not yet implemented.
