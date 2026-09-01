@@ -2,40 +2,38 @@
   "name": "n8n-nodes-canny",
   "version": "0.1.0",
   "description": "n8n community node for Canny (canny.io) — product feedback, feature requests, and roadmap management. Not affiliated with Canny Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/MychelGarzon/n8n-nodes-canny",
   "keywords": [
     "n8n-community-node-package",
     "canny",
     "feedback",
     "roadmap"
   ],
-  "license": "MIT",
-  "homepage": "https://github.com/MychelGarzon/n8n-nodes-canny",
   "author": {
-    "name": "Mychel Garzon",
+    "name": "MychelGarzon",
     "email": "mychel.garzon@gmail.com"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/MychelGarzon/n8n-nodes-canny.git"
   },
-  "engines": {
-    "node": ">=18.10",
-    "pnpm": ">=8"
-  },
-  "main": "index.js",
   "scripts": {
-    "build": "tsc && gulp build:icons",
-    "dev": "tsc --watch",
-    "format": "prettier nodes credentials --write",
-    "lint": "eslint nodes credentials package.json",
-    "lintfix": "eslint nodes credentials package.json --ext .ts --fix",
-    "prepublishOnly": "npm run build && eslint -c .eslintrc.prepublish.js nodes credentials package.json --ext .ts"
+    "build": "n8n-node build",
+    "build:watch": "tsc --watch",
+    "dev": "n8n-node dev",
+    "lint": "n8n-node lint",
+    "lint:fix": "n8n-node lint --fix",
+    "release": "n8n-node release",
+    "prepublishOnly": "n8n-node prerelease",
+    "test": "jest"
   },
   "files": [
     "dist"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
+    "strict": true,
     "credentials": [
       "dist/credentials/CannyApi.credentials.js"
     ],
@@ -45,14 +43,14 @@
     ]
   },
   "devDependencies": {
-    "@n8n/node-cli": "^0.46.1",
-    "@typescript-eslint/parser": "^7.15.0",
-    "eslint-plugin-n8n-nodes-base": "^1.16.1",
-    "gulp": "^4.0.2",
-    "jsonc-eslint-parser": "^3.3.0",
-    "n8n-workflow": "*",
-    "prettier": "^3.3.2",
-    "typescript": "^5.5.3"
+    "@n8n/node-cli": "*",
+    "eslint": "9.32.0",
+    "prettier": "3.6.2",
+    "release-it": "^19.0.4",
+    "typescript": "5.9.2",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.4.2",
+    "ts-jest": "^29.4.12"
   },
   "peerDependencies": {
     "n8n-workflow": "*"
