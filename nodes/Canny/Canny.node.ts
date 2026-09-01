@@ -85,23 +85,22 @@ export class Canny implements INodeType {
 
     for (let i = 0; i < items.length; i++) {
       try {
-        const { endpoint, body, responseKey } = buildRequestParams.call(
-          this,
-          resource,
-          operation,
-          i,
-        );
+                const { endpoint, body, responseKey, paginationStyle } =
+          buildRequestParams.call(this, resource, operation, i);
 
         let results: IDataObject[];
 
         if (PAGINATED_OPERATIONS.includes(operation) && responseKey) {
-          results = await fetchPaginated.call(
-            this,
-            endpoint,
-            body,
-            responseKey,
-            i,
-          );
+          results =
+            paginationStyle === "cursor"
+              ? await fetchPaginatedCursor.call(
+                  this,
+                  endpoint,
+                  body,
+                  responseKey,
+                  i,
+                )
+              : await fetchPaginated.call(this, endpoint, body, responseKey, i);
         } else {
           const single = await fetchSingle.call(this, endpoint, body, i);
           results = [single];
