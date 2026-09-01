@@ -32,8 +32,8 @@ export class Canny implements INodeType {
     description:
       "Consume the Canny API (product feedback, feature requests, roadmap)",
     defaults: { name: "Canny" },
-    inputs: ["main"],
-    outputs: ["main"],
+    inputs: [NodeConnectionTypes.Main],
+    outputs: [NodeConnectionTypes.Main],
     usableAsTool: true,
     credentials: [
       {

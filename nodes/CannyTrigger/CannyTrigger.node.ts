@@ -30,7 +30,7 @@ export class CannyTrigger implements INodeType {
       "Starts the workflow when a Canny event occurs (e.g. new post, status change)",
     defaults: { name: "Canny Trigger" },
     inputs: [],
-    outputs: ["main"],
+    outputs: [NodeConnectionTypes.Main],
     credentials: [
       {
         name: "cannyApi",
