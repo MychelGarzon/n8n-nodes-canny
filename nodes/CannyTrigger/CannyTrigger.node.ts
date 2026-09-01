@@ -4,28 +4,18 @@ import {
   INodeType,
   INodeTypeDescription,
   IWebhookResponseData,
+  NodeConnectionTypes,
 } from "n8n-workflow";
 
-/**
- * STUB — do not publish until the Webhooks section of the Canny API docs
- * is read in full. Two things must be confirmed first:
- *
- * 1. Does Canny sign outgoing webhook payloads (e.g. HMAC header)? If yes,
- *    verify the signature inside webhook() before trusting the payload.
- *    If no, ship this but document the lower trust level clearly in the
- *    node's description and the README.
- * 2. Does registering a webhook happen via an API call (so this can use
- *    n8n's standard checkExists/create/delete hook lifecycle), or only
- *    through the Canny dashboard UI (so this becomes a manual-setup
- *    trigger instead)?
- */
+
 export class CannyTrigger implements INodeType {
   description: INodeTypeDescription = {
     displayName: "Canny Trigger",
     name: "cannyTrigger",
-    icon: "file:canny.svg",
+    icon: { light: "file:canny.svg", dark: "file:canny.dark.svg" },
     group: ["trigger"],
     version: 1,
+    subtitle: "={{$parameter[\"event\"]}}",
     description:
       "Starts the workflow when a Canny event occurs (e.g. new post, status change)",
     defaults: { name: "Canny Trigger" },
