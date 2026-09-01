@@ -1,5 +1,7 @@
 # n8n-nodes-canny
 
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=MychelGarzon_n8n-nodes-canny&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=MychelGarzon_n8n-nodes-canny)
+
 This is an n8n community node. It lets you use [Canny](https://canny.io/) in your n8n workflows.
 
 Canny is a product feedback and feature-request management tool. It lets teams collect feedback from users, organize it into boards and categories, track votes and comments, and publish public roadmaps.
