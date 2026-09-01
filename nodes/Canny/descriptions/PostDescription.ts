@@ -83,4 +83,25 @@ export const postFields: INodeProperties[] = [
 		},
 		description: 'Optional — filter posts to a single board. Leave empty to list across all boards.',
 	},
+	{
+		displayName: 'Return All',
+		name: 'returnAll',
+		type: 'boolean',
+		default: false,
+		displayOptions: {
+			show: { resource: ['post'], operation: ['getAll'] },
+		},
+		description: 'Whether to return all results or only up to a given limit',
+	},
+	{
+		displayName: 'Limit',
+		name: 'limit',
+		type: 'number',
+		typeOptions: { minValue: 1 },
+		default: 50,
+		displayOptions: {
+			show: { resource: ['post'], operation: ['getAll'], returnAll: [false] },
+		},
+		description: 'Max number of results to return',
+	},
 ];
