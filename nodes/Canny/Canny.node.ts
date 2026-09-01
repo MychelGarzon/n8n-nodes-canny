@@ -1,13 +1,19 @@
-import {
+import type {
+  IDataObject,
   IExecuteFunctions,
   INodeExecutionData,
   INodeType,
   INodeTypeDescription,
+  JsonObject,
 } from "n8n-workflow";
 
+import { NodeApiError, NodeConnectionTypes } from "n8n-workflow";
+
 import {
-  cannyApiRequest,
-  cannyApiRequestAllItemsSkip,
+  buildRequestParams,
+  fetchPaginated,
+  fetchSingle,
+  PAGINATED_OPERATIONS,
 } from "./GenericFunctions";
 import { boardOperations, boardFields } from "./descriptions/BoardDescription";
 import {
@@ -25,7 +31,7 @@ export class Canny implements INodeType {
   description: INodeTypeDescription = {
     displayName: "Canny",
     name: "canny",
-    icon: "file:canny.svg",
+    icon: { light: "file:canny.svg", dark: "file:canny.dark.svg" },
     group: ["transform"],
     version: 1,
     subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -78,75 +84,46 @@ export class Canny implements INodeType {
 
     for (let i = 0; i < items.length; i++) {
       try {
-        let responseData;
+        const { endpoint, body, responseKey } = buildRequestParams.call(
+          this,
+          resource,
+          operation,
+          i,
+        );
 
-        // Route to the right endpoint per resource + operation.
-        // This switch is intentionally flat rather than split into
-        // per-resource executor files — with five resources at v1
-        // scope, one switch stays easier to scan than five imports.
-        // Revisit this if v2 resources push the file past ~300 lines.
-        if (resource === "post") {
-          if (operation === "create") {
-            const boardID = this.getNodeParameter("boardID", i) as string;
-            const title = this.getNodeParameter("title", i) as string;
-            const details = this.getNodeParameter("details", i, "") as string;
-            const authorID = this.getNodeParameter("authorID", i) as string;
+        let results: IDataObject[];
 
-            responseData = await cannyApiRequest.call(
-              this,
-              "POST",
-              "/posts/create",
-              {
-                boardID,
-                title,
-                details,
-                authorID,
-              },
-            );
-          } else if (operation === "get") {
-            const postID = this.getNodeParameter("postID", i) as string;
-            responseData = await cannyApiRequest.call(
-              this,
-              "POST",
-              "/posts/retrieve",
-              {
-                id: postID,
-              },
-            );
-          } else if (operation === "getAll") {
-            const boardID = this.getNodeParameter("boardID", i, "") as string;
-            const body = boardID ? { boardID } : {};
-            responseData = await cannyApiRequestAllItemsSkip.call(
-              this,
-              "posts",
-              "/posts/list",
-              body,
-            );
-          }
-          // TODO: 'update' / 'delete' / 'changeStatus' operations —
-          // wire up once Status Changes docs are read and it's
-          // confirmed whether status lives on /posts or a separate
-          // endpoint.
-        }
-
-        // TODO: board / category / idea / portalComment routing.
-        // Left out of this boilerplate deliberately — wire these up
-        // following the same pattern as 'post' above once each
-        // resource's field set is finalized in its description file.
-
-        if (Array.isArray(responseData)) {
-          returnData.push(
-            ...responseData.map((item) => ({ json: item as any })),
+        if (PAGINATED_OPERATIONS.includes(operation) && responseKey) {
+          results = await fetchPaginated.call(
+            this,
+            endpoint,
+            body,
+            responseKey,
+            i,
           );
         } else {
-          returnData.push({ json: responseData });
+          const single = await fetchSingle.call(this, endpoint, body, i);
+          results = [single];
         }
+
+        returnData.push(
+          ...results.map((item) => ({
+            json: item,
+            pairedItem: { item: i },
+          })),
+        );
       } catch (error) {
         if (this.continueOnFail()) {
-          returnData.push({ json: { error: (error as Error).message } });
+          returnData.push({
+            json: { error: (error as Error).message },
+            pairedItem: { item: i },
+          });
           continue;
         }
-        throw error;
+
+        throw new NodeApiError(this.getNode(), error as unknown as JsonObject, {
+          itemIndex: i,
+        });
       }
     }
 
