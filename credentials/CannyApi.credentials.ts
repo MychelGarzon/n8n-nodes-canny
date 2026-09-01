@@ -12,6 +12,11 @@ export class CannyApi implements ICredentialType {
 
 	documentationUrl = 'https://developers.canny.io/api-reference';
 
+icon = {
+    light: 'file:canny.svg',
+    dark: 'file:canny.dark.svg',
+} as const;
+
 	properties: INodeProperties[] = [
 		{
 			displayName: 'API Key',
