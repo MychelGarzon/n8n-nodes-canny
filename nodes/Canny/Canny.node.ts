@@ -31,7 +31,7 @@ export class Canny implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Canny',
 		name: 'canny',
-		icon: { light: 'file:canny.svg', dark: 'file:canny.dark.svg' },
+		icon: { light: 'file:../icons/canny.svg', dark: 'file:../icons/canny.dark.svg' },
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
