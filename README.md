@@ -108,6 +108,10 @@ For general help getting started with n8n, see the [Try it out](https://docs.n8n
 
 ## Version history
 
+### 0.2.6 – 0.2.7
+
+Reduced the `execute()` method's cognitive complexity by extracting pagination-dispatch and error-classification logic into dedicated helper functions. Consolidated repeated Post ID field definitions into the shared `idField` helper, further reducing code duplication.
+
 ### 0.2.5
 
 Removed Board's non-functional Return All/Limit fields (Canny's boards/list endpoint doesn't support pagination). Normalized Return All defaults and Limit bounds across Post, Category, Idea, and Portal Comment. Migrated Board and Category onto the shared field-definition helpers for consistency with the rest of the codebase.
