@@ -1,5 +1,5 @@
 import { INodeProperties } from 'n8n-workflow';
-import { showFor, showForWith, operationsField } from './DisplayOptions';
+import { showFor, showForWith, idField, operationsField } from './DisplayOptions';
 
 const RESOURCE = 'post';
 
@@ -53,14 +53,7 @@ export const postFields: INodeProperties[] = [
 		displayOptions: showFor(RESOURCE, ['create']),
 		description: 'The Canny user ID to post as',
 	},
-	{
-		displayName: 'Post ID',
-		name: 'postID',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(RESOURCE, ['get']),
-	},
+	idField('Post ID', 'postID', RESOURCE, ['get', 'update', 'delete', 'changeStatus']),
 	{
 		displayName: 'Board ID',
 		name: 'boardID',
@@ -86,14 +79,6 @@ export const postFields: INodeProperties[] = [
 		default: 50,
 		displayOptions: showForWith(RESOURCE, ['getAll'], { returnAll: [false] }),
 		description: 'Max number of results to return',
-	},
-	{
-		displayName: 'Post ID',
-		name: 'postID',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(RESOURCE, ['update']),
 	},
 	{
 		displayName: 'Title',
@@ -128,22 +113,6 @@ export const postFields: INodeProperties[] = [
 		default: false,
 		displayOptions: showFor(RESOURCE, ['update']),
 		description: 'Whether the ETA should be visible to all users',
-	},
-	{
-		displayName: 'Post ID',
-		name: 'postID',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(RESOURCE, ['delete']),
-	},
-	{
-		displayName: 'Post ID',
-		name: 'postID',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(RESOURCE, ['changeStatus']),
 	},
 	{
 		displayName: 'Changer ID',
