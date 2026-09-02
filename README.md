@@ -126,6 +126,10 @@ For general help getting started with n8n, see the [Try it out](https://docs.n8n
 - [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
 - [Canny API reference](https://developers.canny.io/api-reference)
 
+## Disclaimer
+
+This is an unofficial, community-built integration. It is not affiliated with, endorsed by, or supported by Canny Inc. "Canny" is a trademark of Canny Inc., used here under nominative fair use for descriptive purposes only.
+
 ## Version history
 
 ### 0.2.9
