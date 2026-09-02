@@ -18,6 +18,7 @@ import {
 	PAGINATED_OPERATIONS,
 } from './GenericFunctions';
 
+import { CANNY_ICON, CANNY_CREDENTIALS, dropdownField } from '../shared/NodeConstants';
 import { boardOperations, boardFields } from './descriptions/BoardDescription';
 import { categoryOperations, categoryFields } from './descriptions/CategoryDescription';
 import { postOperations, postFields } from './descriptions/PostDescription';
@@ -31,7 +32,7 @@ export class Canny implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Canny',
 		name: 'canny',
-		icon: { light: 'file:../icons/canny.svg', dark: 'file:../icons/canny.dark.svg' },
+		icon: CANNY_ICON,
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -40,27 +41,20 @@ export class Canny implements INodeType {
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
 		usableAsTool: true,
-		credentials: [
-			{
-				name: 'cannyApi',
-				required: true,
-			},
-		],
+		credentials: CANNY_CREDENTIALS,
 		properties: [
-			{
-				displayName: 'Resource',
-				name: 'resource',
-				type: 'options',
-				noDataExpression: true,
-				options: [
+			dropdownField(
+				'Resource',
+				'resource',
+				[
 					{ name: 'Board', value: 'board' },
 					{ name: 'Category', value: 'category' },
 					{ name: 'Idea', value: 'idea' },
 					{ name: 'Portal Comment', value: 'portalComment' },
 					{ name: 'Post', value: 'post' },
 				],
-				default: 'post',
-			},
+				'post',
+			),
 			...boardOperations,
 			...boardFields,
 			...categoryOperations,

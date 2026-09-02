@@ -1,15 +1,12 @@
 import { INodeProperties } from 'n8n-workflow';
+import { showFor, showForWith, operationsField } from './DisplayOptions';
+
+const RESOURCE = 'post';
 
 export const postOperations: INodeProperties[] = [
-	{
-		displayName: 'Operation',
-		name: 'operation',
-		type: 'options',
-		noDataExpression: true,
-		displayOptions: {
-			show: { resource: ['post'] },
-		},
-		options: [
+	operationsField(
+		RESOURCE,
+		[
 			{ name: 'Change Status', value: 'changeStatus', action: 'Change post status' },
 			{ name: 'Create', value: 'create', action: 'Create a post' },
 			{ name: 'Delete', value: 'delete', action: 'Delete a post' },
@@ -17,8 +14,8 @@ export const postOperations: INodeProperties[] = [
 			{ name: 'Get Many', value: 'getAll', action: 'Get many posts' },
 			{ name: 'Update', value: 'update', action: 'Update a post' },
 		],
-		default: 'getAll',
-	},
+		'getAll',
+	),
 ];
 
 export const postFields: INodeProperties[] = [
@@ -28,9 +25,7 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 		description: 'The board this post belongs to',
 	},
 	{
@@ -39,9 +34,7 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 	},
 	{
 		displayName: 'Details',
@@ -49,9 +42,7 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		typeOptions: { rows: 4 },
 		default: '',
-		displayOptions: {
-			show: { resource: ['post'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 	},
 	{
 		displayName: 'Author ID',
@@ -59,9 +50,7 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 		description: 'The Canny user ID to post as',
 	},
 	{
@@ -70,18 +59,14 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['get'] },
-		},
+		displayOptions: showFor(RESOURCE, ['get']),
 	},
 	{
 		displayName: 'Board ID',
 		name: 'boardID',
 		type: 'string',
 		default: '',
-		displayOptions: {
-			show: { resource: ['post'], operation: ['getAll'] },
-		},
+		displayOptions: showFor(RESOURCE, ['getAll']),
 		description:
 			'Optional — filter posts to a single board. Leave empty to list across all boards.',
 	},
@@ -90,9 +75,7 @@ export const postFields: INodeProperties[] = [
 		name: 'returnAll',
 		type: 'boolean',
 		default: false,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['getAll'] },
-		},
+		displayOptions: showFor(RESOURCE, ['getAll']),
 		description: 'Whether to return all results or only up to a given limit',
 	},
 	{
@@ -101,9 +84,7 @@ export const postFields: INodeProperties[] = [
 		type: 'number',
 		typeOptions: { minValue: 1 },
 		default: 50,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['getAll'], returnAll: [false] },
-		},
+		displayOptions: showForWith(RESOURCE, ['getAll'], { returnAll: [false] }),
 		description: 'Max number of results to return',
 	},
 	{
@@ -112,18 +93,14 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['update'] },
-		},
+		displayOptions: showFor(RESOURCE, ['update']),
 	},
 	{
 		displayName: 'Title',
 		name: 'title',
 		type: 'string',
 		default: '',
-		displayOptions: {
-			show: { resource: ['post'], operation: ['update'] },
-		},
+		displayOptions: showFor(RESOURCE, ['update']),
 		description: 'Optional — leave empty to keep the current title',
 	},
 	{
@@ -132,9 +109,7 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		typeOptions: { rows: 4 },
 		default: '',
-		displayOptions: {
-			show: { resource: ['post'], operation: ['update'] },
-		},
+		displayOptions: showFor(RESOURCE, ['update']),
 		description: 'Optional — leave empty to keep the current details',
 	},
 	{
@@ -143,9 +118,7 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		placeholder: 'e.g. 06/2026',
-		displayOptions: {
-			show: { resource: ['post'], operation: ['update'] },
-		},
+		displayOptions: showFor(RESOURCE, ['update']),
 		description: 'Optional — estimated completion date, in MM/YYYY format',
 	},
 	{
@@ -153,9 +126,7 @@ export const postFields: INodeProperties[] = [
 		name: 'etaPublic',
 		type: 'boolean',
 		default: false,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['update'] },
-		},
+		displayOptions: showFor(RESOURCE, ['update']),
 		description: 'Whether the ETA should be visible to all users',
 	},
 	{
@@ -164,9 +135,7 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['delete'] },
-		},
+		displayOptions: showFor(RESOURCE, ['delete']),
 	},
 	{
 		displayName: 'Post ID',
@@ -174,9 +143,7 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['changeStatus'] },
-		},
+		displayOptions: showFor(RESOURCE, ['changeStatus']),
 	},
 	{
 		displayName: 'Changer ID',
@@ -184,9 +151,7 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['changeStatus'] },
-		},
+		displayOptions: showFor(RESOURCE, ['changeStatus']),
 		description: 'The Canny user ID of the admin recorded as making this change',
 	},
 	{
@@ -202,9 +167,7 @@ export const postFields: INodeProperties[] = [
 			{ name: 'Under Review', value: 'under review' },
 		],
 		default: 'planned',
-		displayOptions: {
-			show: { resource: ['post'], operation: ['changeStatus'] },
-		},
+		displayOptions: showFor(RESOURCE, ['changeStatus']),
 		description:
 			'Your team may have additional custom statuses beyond these defaults — check your Canny settings page',
 	},
@@ -213,9 +176,7 @@ export const postFields: INodeProperties[] = [
 		name: 'shouldNotifyVoters',
 		type: 'boolean',
 		default: false,
-		displayOptions: {
-			show: { resource: ['post'], operation: ['changeStatus'] },
-		},
+		displayOptions: showFor(RESOURCE, ['changeStatus']),
 	},
 	{
 		displayName: 'Comment Value',
@@ -223,9 +184,7 @@ export const postFields: INodeProperties[] = [
 		type: 'string',
 		typeOptions: { rows: 3 },
 		default: '',
-		displayOptions: {
-			show: { resource: ['post'], operation: ['changeStatus'] },
-		},
+		displayOptions: showFor(RESOURCE, ['changeStatus']),
 		description: 'Optional — a comment attached to this status change',
 	},
 ];

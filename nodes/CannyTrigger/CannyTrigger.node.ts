@@ -8,11 +8,13 @@ import {
 } from 'n8n-workflow';
 import { createHmac } from 'node:crypto';
 
+import { CANNY_ICON, CANNY_CREDENTIALS, dropdownField } from '../shared/NodeConstants';
+
 export class CannyTrigger implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Canny Trigger',
 		name: 'cannyTrigger',
-		icon: { light: 'file:../icons/canny.svg', dark: 'file:../icons/canny.dark.svg' },
+		icon: CANNY_ICON,
 		group: ['trigger'],
 		version: 1,
 		subtitle: '={{$parameter["event"]}}',
@@ -21,12 +23,7 @@ export class CannyTrigger implements INodeType {
 		defaults: { name: 'Canny Trigger' },
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
-		credentials: [
-			{
-				name: 'cannyApi',
-				required: true,
-			},
-		],
+		credentials: CANNY_CREDENTIALS,
 		webhooks: [
 			{
 				name: 'default',
@@ -43,12 +40,10 @@ export class CannyTrigger implements INodeType {
 				type: 'notice',
 				default: '',
 			},
-			{
-				displayName: 'Event',
-				name: 'event',
-				type: 'options',
-				noDataExpression: true,
-				options: [
+			dropdownField(
+				'Event',
+				'event',
+				[
 					{ name: 'Comment Created', value: 'comment.created' },
 					{ name: 'Comment Deleted', value: 'comment.deleted' },
 					{ name: 'Comment Edited', value: 'comment.edited' },
@@ -63,10 +58,9 @@ export class CannyTrigger implements INodeType {
 					{ name: 'Vote Created', value: 'vote.created' },
 					{ name: 'Vote Deleted', value: 'vote.deleted' },
 				],
-				default: 'post.created',
-				description:
-					'Canny sends every subscribed event type to the same webhook URL. This filter drops any event that does not match your selection.',
-			},
+				'post.created',
+				'Canny sends every subscribed event type to the same webhook URL. This filter drops any event that does not match your selection.',
+			),
 		],
 	};
 
