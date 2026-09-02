@@ -117,6 +117,8 @@ This node has `usableAsTool: true` and works as a tool for n8n's AI Agent node. 
 
 For example, to let an agent change a post's status, you'd typically connect three separate tool nodes: one for **Post → Get Many** (to find the post), one for **User → Get Many** (to find the user), and one for **Post → Change Status** (with `postID`, `changerID`, `status`, and `commentValue` all left as model-defined parameters).
 
+Whether the model actually chains multiple tool calls together on its own (e.g. looking up a user ID before using it) depends on the underlying LLM's own reasoning — this node provides everything needed for that chain to work, but can't force a model to take the extra discovery step. If an agent asks you for an ID instead of looking it up itself, try being more explicit in your prompt about the order of steps.
+
 For general help getting started with n8n, see the [Try it out](https://docs.n8n.io/try-it-out/) documentation.
 
 ## Resources
