@@ -49,7 +49,9 @@ export interface RequestParams {
 // ---------------------------------------------------------------------
 
 function buildPostCreateRequest(this: IExecuteFunctions, i: number): RequestParams {
-	const boardID = this.getNodeParameter('boardID', i) as string;
+	const boardID = this.getNodeParameter('boardID', i, undefined, {
+		extractValue: true,
+	}) as string;
 	const title = this.getNodeParameter('title', i) as string;
 	const details = this.getNodeParameter('details', i, '') as string;
 	const authorID = this.getNodeParameter('authorID', i) as string;
@@ -65,7 +67,9 @@ function buildPostGetRequest(this: IExecuteFunctions, i: number): RequestParams 
 }
 
 function buildPostGetAllRequest(this: IExecuteFunctions, i: number): RequestParams {
-	const boardID = this.getNodeParameter('boardID', i, '') as string;
+	const boardID = this.getNodeParameter('boardID', i, '', {
+		extractValue: true,
+	}) as string;
 	const body: IDataObject = {};
 	if (boardID) body.boardID = boardID;
 	return { endpoint: '/posts/list', body, responseKey: 'posts' };
@@ -133,7 +137,9 @@ function buildPostRequest(this: IExecuteFunctions, operation: string, i: number)
 
 function buildBoardRequest(this: IExecuteFunctions, operation: string, i: number): RequestParams {
 	if (operation === 'get') {
-		const boardID = this.getNodeParameter('boardID', i) as string;
+		const boardID = this.getNodeParameter('boardID', i, undefined, {
+			extractValue: true,
+		}) as string;
 		return { endpoint: '/boards/retrieve', body: { id: boardID } };
 	}
 	if (operation === 'getAll') {
@@ -169,13 +175,17 @@ function buildCategoryRequest(
 		return { endpoint: '/categories/retrieve', body: { id: categoryID } };
 	}
 	if (operation === 'getAll') {
-		const boardID = this.getNodeParameter('boardID', i, '') as string;
+		const boardID = this.getNodeParameter('boardID', i, '', {
+			extractValue: true,
+		}) as string;
 		const body: IDataObject = {};
 		if (boardID) body.boardID = boardID;
 		return { endpoint: '/categories/list', body, responseKey: 'categories' };
 	}
 	if (operation === 'create') {
-		const boardID = this.getNodeParameter('boardID', i) as string;
+		const boardID = this.getNodeParameter('boardID', i, undefined, {
+			extractValue: true,
+		}) as string;
 		const name = this.getNodeParameter('name', i) as string;
 		const parentID = this.getNodeParameter('parentID', i, '') as string;
 		const subscribeAdmins = this.getNodeParameter('subscribeAdmins', i, false) as boolean;
@@ -213,7 +223,9 @@ function buildPortalCommentRequest(
 	}
 	if (operation === 'getAll') {
 		const postID = this.getNodeParameter('postID', i, '') as string;
-		const boardID = this.getNodeParameter('boardID', i, '') as string;
+		const boardID = this.getNodeParameter('boardID', i, '', {
+			extractValue: true,
+		}) as string;
 		const body: IDataObject = {};
 		if (postID) body.postID = postID;
 		if (boardID) body.boardID = boardID;

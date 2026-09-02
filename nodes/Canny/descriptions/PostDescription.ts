@@ -1,5 +1,6 @@
 import { INodeProperties } from 'n8n-workflow';
 import { showFor, showForWith, idField, operationsField } from './DisplayOptions';
+import { resourceLocatorField } from '../../shared/NodeConstants';
 
 const RESOURCE = 'post';
 
@@ -19,15 +20,10 @@ export const postOperations: INodeProperties[] = [
 ];
 
 export const postFields: INodeProperties[] = [
-	{
-		displayName: 'Board ID',
-		name: 'boardID',
-		type: 'string',
-		default: '',
+	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['create'], {
 		required: true,
-		displayOptions: showFor(RESOURCE, ['create']),
 		description: 'The board this post belongs to',
-	},
+	}),
 	{
 		displayName: 'Title',
 		name: 'title',
@@ -54,15 +50,10 @@ export const postFields: INodeProperties[] = [
 		description: 'The Canny user ID to post as',
 	},
 	idField('Post ID', 'postID', RESOURCE, ['get', 'update', 'delete', 'changeStatus']),
-	{
-		displayName: 'Board ID',
-		name: 'boardID',
-		type: 'string',
-		default: '',
-		displayOptions: showFor(RESOURCE, ['getAll']),
+	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['getAll'], {
 		description:
 			'Optional — filter posts to a single board. Leave empty to list across all boards.',
-	},
+	}),
 	{
 		displayName: 'Return All',
 		name: 'returnAll',

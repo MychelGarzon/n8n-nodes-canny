@@ -1,5 +1,6 @@
 import { INodeProperties } from 'n8n-workflow';
 import { showFor, showForWith, idField, returnAllField, operationsField } from './DisplayOptions';
+import { resourceLocatorField } from '../../shared/NodeConstants';
 
 const RESOURCE = 'category';
 
@@ -18,15 +19,10 @@ export const categoryOperations: INodeProperties[] = [
 
 export const categoryFields: INodeProperties[] = [
 	idField('Category ID', 'categoryID', RESOURCE, ['get']),
-	{
-		displayName: 'Board ID',
-		name: 'boardID',
-		type: 'string',
-		default: '',
-		displayOptions: showFor(RESOURCE, ['getAll']),
+	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['getAll'], {
 		description:
 			'Optional — filter categories to a single board. Leave empty to list across all boards.',
-	},
+	}),
 	returnAllField(RESOURCE),
 	{
 		displayName: 'Limit',
@@ -37,15 +33,10 @@ export const categoryFields: INodeProperties[] = [
 		displayOptions: showForWith(RESOURCE, ['getAll'], { returnAll: [false] }),
 		description: 'Max number of results to return',
 	},
-	{
-		displayName: 'Board ID',
-		name: 'boardID',
-		type: 'string',
-		default: '',
+	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['create'], {
 		required: true,
-		displayOptions: showFor(RESOURCE, ['create']),
 		description: 'The board to create the category on',
-	},
+	}),
 	{
 		displayName: 'Name',
 		name: 'name',

@@ -1,5 +1,6 @@
 import { INodeProperties } from 'n8n-workflow';
 import { showFor, showForWith, idField, returnAllField, operationsField } from './DisplayOptions';
+import { resourceLocatorField } from '../../shared/NodeConstants';
 
 const RESOURCE = 'portalComment';
 
@@ -26,14 +27,9 @@ export const portalCommentFields: INodeProperties[] = [
 		displayOptions: showFor(RESOURCE, ['getAll']),
 		description: 'Optional — filter comments to a single post',
 	},
-	{
-		displayName: 'Board ID',
-		name: 'boardID',
-		type: 'string',
-		default: '',
-		displayOptions: showFor(RESOURCE, ['getAll']),
+	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['getAll'], {
 		description: 'Optional — filter comments to a single board',
-	},
+	}),
 	returnAllField(RESOURCE),
 	{
 		displayName: 'Limit',

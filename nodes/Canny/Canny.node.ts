@@ -3,6 +3,9 @@ import type {
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
+	ILoadOptionsFunctions,
+	INodeListSearchResult,
+	IDataObject,
 } from 'n8n-workflow';
 
 import { NodeConnectionTypes } from 'n8n-workflow';
@@ -56,6 +59,85 @@ export class Canny implements INodeType {
 			...portalCommentOperations,
 			...portalCommentFields,
 		],
+	};
+
+	methods = {
+		listSearch: {
+			async searchBoards(this: ILoadOptionsFunctions): Promise<INodeListSearchResult> {
+				const response = await this.helpers.httpRequestWithAuthentication.call(this, 'cannyApi', {
+					method: 'POST',
+					url: 'https://canny.io/api/v1/boards/list',
+					body: {},
+					json: true,
+				});
+
+				const boards = Array.isArray(response.boards)
+					? (response.boards as Array<{ name: string; id: string }>)
+					: [];
+
+				return {
+					results: boards.map((board) => ({
+						name: board.name,
+						value: board.id,
+					})),
+				};
+			},
+			async searchCategories(this: ILoadOptionsFunctions): Promise<INodeListSearchResult> {
+				const boardID = this.getCurrentNodeParameter('boardID', {
+					extractValue: true,
+				}) as string;
+
+				const body: IDataObject = boardID ? { boardID } : {};
+
+				const response = await this.helpers.httpRequestWithAuthentication.call(this, 'cannyApi', {
+					method: 'POST',
+					url: 'https://canny.io/api/v1/categories/list',
+					body,
+					json: true,
+				});
+
+				const categories = Array.isArray(response.categories)
+					? (response.categories as Array<{ name: string; id: string }>)
+					: [];
+
+				return {
+					results: categories.map((category) => ({
+						name: category.name,
+						value: category.id,
+					})),
+				};
+			},
+			async searchPosts(
+				this: ILoadOptionsFunctions,
+				filter?: string,
+			): Promise<INodeListSearchResult> {
+				const boardID = this.getCurrentNodeParameter('boardID', {
+					extractValue: true,
+				}) as string;
+
+				const body: IDataObject = {};
+				if (boardID) body.boardID = boardID;
+				if (filter) body.search = filter;
+
+				const response = await this.helpers.httpRequestWithAuthentication.call(this, 'cannyApi', {
+					method: 'POST',
+					url: 'https://canny.io/api/v1/posts/list',
+					body,
+					json: true,
+				});
+
+				const posts = Array.isArray(response.posts)
+					? (response.posts as Array<{ title: string; id: string }>)
+					: [];
+
+				return {
+					results: posts.map((post) => ({
+						name: post.title,
+						value: post.id,
+					})),
+				};
+			},
+		},
 	};
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {

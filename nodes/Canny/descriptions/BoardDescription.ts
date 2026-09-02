@@ -1,5 +1,6 @@
 import { INodeProperties } from 'n8n-workflow';
-import { idField, operationsField } from './DisplayOptions';
+import { operationsField } from './DisplayOptions';
+import { resourceLocatorField } from '../../shared/NodeConstants';
 
 const RESOURCE = 'board';
 
@@ -15,5 +16,7 @@ export const boardOperations: INodeProperties[] = [
 ];
 
 export const boardFields: INodeProperties[] = [
-	idField('Board ID', 'boardID', RESOURCE, ['get'], "The board's unique identifier"),
+	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['get'], {
+		required: true,
+	}),
 ];

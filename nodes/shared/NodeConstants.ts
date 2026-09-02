@@ -42,3 +42,41 @@ export function dropdownField(
 	if (description) field.description = description;
 	return field;
 }
+export function resourceLocatorField(
+	displayName: string,
+	name: string,
+	searchListMethod: string,
+	resource: string,
+	operations: string[],
+	options: { required?: boolean; description?: string; placeholder?: string } = {},
+): INodeProperties {
+	return {
+		displayName,
+		name,
+		type: 'resourceLocator',
+		default: { mode: 'list', value: '' },
+		required: options.required ?? false,
+		modes: [
+			{
+				displayName: 'From List',
+				name: 'list',
+				type: 'list',
+				placeholder: `Select a ${displayName}...`,
+				typeOptions: {
+					searchListMethod,
+					searchable: true,
+				},
+			},
+			{
+				displayName: 'By ID',
+				name: 'id',
+				type: 'string',
+				placeholder: options.placeholder ?? 'e.g. 6a2889c586d7b8843bf4cf01',
+			},
+		],
+		displayOptions: {
+			show: { resource: [resource], operation: operations },
+		},
+		description: options.description,
+	};
+}
