@@ -82,7 +82,7 @@ export const postFields: INodeProperties[] = [
 		displayName: 'Limit',
 		name: 'limit',
 		type: 'number',
-		typeOptions: { minValue: 1 },
+		typeOptions: { minValue: 1, maxValue: 100 },
 		default: 50,
 		displayOptions: showForWith(RESOURCE, ['getAll'], { returnAll: [false] }),
 		description: 'Max number of results to return',

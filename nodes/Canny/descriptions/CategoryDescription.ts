@@ -1,64 +1,40 @@
 import { INodeProperties } from 'n8n-workflow';
+import { showFor, showForWith, idField, returnAllField, operationsField } from './DisplayOptions';
+
+const RESOURCE = 'category';
 
 export const categoryOperations: INodeProperties[] = [
-	{
-		displayName: 'Operation',
-		name: 'operation',
-		type: 'options',
-		noDataExpression: true,
-		displayOptions: {
-			show: { resource: ['category'] },
-		},
-		options: [
+	operationsField(
+		RESOURCE,
+		[
 			{ name: 'Create', value: 'create', action: 'Create a category' },
 			{ name: 'Delete', value: 'delete', action: 'Delete a category' },
 			{ name: 'Get', value: 'get', action: 'Get a category' },
 			{ name: 'Get Many', value: 'getAll', action: 'Get many categories' },
 		],
-		default: 'getAll',
-	},
+		'getAll',
+	),
 ];
 
 export const categoryFields: INodeProperties[] = [
-	{
-		displayName: 'Category ID',
-		name: 'categoryID',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: {
-			show: { resource: ['category'], operation: ['get'] },
-		},
-	},
+	idField('Category ID', 'categoryID', RESOURCE, ['get']),
 	{
 		displayName: 'Board ID',
 		name: 'boardID',
 		type: 'string',
 		default: '',
-		displayOptions: {
-			show: { resource: ['category'], operation: ['getAll'] },
-		},
-		description: 'Optional — filter categories to a single board. Leave empty to list across all boards.',
+		displayOptions: showFor(RESOURCE, ['getAll']),
+		description:
+			'Optional — filter categories to a single board. Leave empty to list across all boards.',
 	},
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		default: false,
-		displayOptions: {
-			show: { resource: ['category'], operation: ['getAll'] },
-		},
-		description: 'Whether to return all results or only up to a given limit',
-	},
+	returnAllField(RESOURCE),
 	{
 		displayName: 'Limit',
 		name: 'limit',
 		type: 'number',
-		typeOptions: { minValue: 1 },
+		typeOptions: { minValue: 1, maxValue: 100 },
 		default: 50,
-		displayOptions: {
-			show: { resource: ['category'], operation: ['getAll'], returnAll: [false] },
-		},
+		displayOptions: showForWith(RESOURCE, ['getAll'], { returnAll: [false] }),
 		description: 'Max number of results to return',
 	},
 	{
@@ -67,9 +43,7 @@ export const categoryFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['category'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 		description: 'The board to create the category on',
 	},
 	{
@@ -78,9 +52,7 @@ export const categoryFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['category'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 		description: 'Must be between 1 and 30 characters long',
 	},
 	{
@@ -88,27 +60,14 @@ export const categoryFields: INodeProperties[] = [
 		name: 'parentID',
 		type: 'string',
 		default: '',
-		displayOptions: {
-			show: { resource: ['category'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 	},
 	{
 		displayName: 'Subscribe Admins',
 		name: 'subscribeAdmins',
 		type: 'boolean',
 		default: false,
-		displayOptions: {
-			show: { resource: ['category'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 	},
-	{
-		displayName: 'Category ID',
-		name: 'categoryID',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: {
-			show: { resource: ['category'], operation: ['delete'] },
-		},
-	},
+	idField('Category ID', 'categoryID', RESOURCE, ['delete']),
 ];

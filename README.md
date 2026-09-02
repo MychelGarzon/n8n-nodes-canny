@@ -108,9 +108,17 @@ For general help getting started with n8n, see the [Try it out](https://docs.n8n
 
 ## Version history
 
+### 0.2.4
+
+Extracted shared icon, credential, and dropdown-field helpers to reduce code duplication across resource description files. Added Jest unit test coverage for all request builders (Post, Board, Category, Idea, Portal Comment) and for the Canny Trigger's webhook signature verification.
+
 ### 0.2.3
 
-Added Post Update, Delete, and Change Status operations. Implemented real webhook signature verification (HMAC-SHA256) and event filtering in Canny Trigger. Fixed a bug where Board's Get Many sent undocumented pagination parameters that silently broke the response. Fixed Portal Comment's Get Many using the wrong API version (v1 instead of v2). Refactored shared field/icon/credential definitions to reduce code duplication.
+Added Post's Update, Delete, and Change Status operations. Implemented real webhook signature verification (HMAC-SHA256) and event filtering in Canny Trigger. Fixed a bug where Board's Get Many sent undocumented pagination parameters that silently broke the response. Fixed Portal Comment's Get Many using the wrong API version (v1 instead of v2). Centralized icon files into a shared folder.
+
+### 0.2.0 – 0.2.2
+
+Internal refactoring: extracted shared field-definition helpers to reduce duplication across resource description files, simplified build tooling to use the official `@n8n/node-cli` scaffold consistently.
 
 ### 0.1.0
 
