@@ -22,8 +22,8 @@ export const postOperations: INodeProperties[] = [
 export const postFields: INodeProperties[] = [
 	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['create'], {
 		required: true,
-		description:
-			'The board this post belongs to. If using "By ID", you must supply the real Canny board ID (e.g. from Board Get Many) — not the board\'s display name.',
+		description: 'The board this post belongs to.',
+		kind: 'board',
 	}),
 	resourceLocatorField('User', 'authorID', 'searchUsers', RESOURCE, ['create'], {
 		required: true,

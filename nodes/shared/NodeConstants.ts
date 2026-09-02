@@ -42,14 +42,29 @@ export function dropdownField(
 	if (description) field.description = description;
 	return field;
 }
+const BY_ID_HINTS: Record<'board' | 'user' | 'post', string> = {
+	board:
+		'If using "By ID", you must supply the real Canny board ID (e.g. from Board Get Many) — not the board\'s display name.',
+	user: 'If using "By ID", you must supply the real Canny user ID — not the user\'s name or email.',
+	post: 'If using "By ID", you must supply the real Canny post ID (e.g. from Post Get Many) — not the post title.',
+};
+
 export function resourceLocatorField(
 	displayName: string,
 	name: string,
 	searchListMethod: string,
 	resource: string,
 	operations: string[],
-	options: { required?: boolean; description?: string; placeholder?: string } = {},
+	options: {
+		required?: boolean;
+		description?: string;
+		placeholder?: string;
+		kind?: 'board' | 'user' | 'post';
+	} = {},
 ): INodeProperties {
+	const hint = options.kind ? BY_ID_HINTS[options.kind] : undefined;
+	const description = [options.description, hint].filter(Boolean).join(' ') || undefined;
+
 	return {
 		displayName,
 		name,
@@ -77,6 +92,6 @@ export function resourceLocatorField(
 		displayOptions: {
 			show: { resource: [resource], operation: operations },
 		},
-		description: options.description,
+		description,
 	};
 }

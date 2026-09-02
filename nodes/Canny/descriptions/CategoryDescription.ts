@@ -21,7 +21,8 @@ export const categoryFields: INodeProperties[] = [
 	idField('Category ID', 'categoryID', RESOURCE, ['get']),
 	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['getAll'], {
 		description:
-			'Optional — filter categories to a single board. Leave empty to list across all boards. If using "By ID", you must supply the real Canny board ID (e.g. from Board Get Many) — not the board\'s display name.',
+			'Optional — filter categories to a single board. Leave empty to list across all boards.',
+		kind: 'board',
 	}),
 	returnAllField(RESOURCE),
 	{
@@ -35,8 +36,8 @@ export const categoryFields: INodeProperties[] = [
 	},
 	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['create'], {
 		required: true,
-		description:
-			'The board to create the category on. If using "By ID", you must supply the real Canny board ID (e.g. from Board Get Many) — not the board\'s display name.',
+		description: 'The board to create the category on.',
+		kind: 'board',
 	}),
 	{
 		displayName: 'Name',

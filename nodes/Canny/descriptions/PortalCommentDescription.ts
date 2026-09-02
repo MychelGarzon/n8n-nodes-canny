@@ -20,10 +20,12 @@ export const portalCommentOperations: INodeProperties[] = [
 export const portalCommentFields: INodeProperties[] = [
 	idField('Comment ID', 'commentID', RESOURCE, ['get']),
 	resourceLocatorField('Post', 'postID', 'searchPosts', RESOURCE, ['getAll'], {
-		description: 'Optional — filter comments to a single post',
+		description: 'Optional — filter comments to a single post.',
+		kind: 'post',
 	}),
 	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['getAll'], {
-		description: 'Optional — filter comments to a single board',
+		description: 'Optional — filter comments to a single board.',
+		kind: 'board',
 	}),
 	returnAllField(RESOURCE),
 	{
@@ -37,9 +39,11 @@ export const portalCommentFields: INodeProperties[] = [
 	},
 	resourceLocatorField('Post', 'postID', 'searchPosts', RESOURCE, ['create'], {
 		required: true,
+		kind: 'post',
 	}),
 	resourceLocatorField('User', 'authorID', 'searchUsers', RESOURCE, ['create'], {
 		required: true,
+		kind: 'user',
 	}),
 	{
 		displayName: 'Value',
