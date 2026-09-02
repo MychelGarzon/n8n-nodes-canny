@@ -111,11 +111,18 @@ export class Canny implements INodeType {
 				this: ILoadOptionsFunctions,
 				filter?: string,
 			): Promise<INodeListSearchResult> {
-				const boardID = this.getCurrentNodeParameter('boardID', {
-					extractValue: true,
-				}) as string;
+				let boardID = '';
+				try {
+					boardID = this.getCurrentNodeParameter('boardID', {
+						extractValue: true,
+					}) as string;
+				} catch {
+					// boardID isn't present on every operation that uses this
+					// picker (e.g. Post Get/Update/Delete/Change Status) —
+					// that's fine, just search across all boards instead.
+				}
 
-				const body: IDataObject = {};
+				const body: IDataObject = { limit: 100 };
 				if (boardID) body.boardID = boardID;
 				if (filter) body.search = filter;
 
@@ -134,6 +141,36 @@ export class Canny implements INodeType {
 					results: posts.map((post) => ({
 						name: post.title,
 						value: post.id,
+					})),
+				};
+			},
+			async searchUsers(
+				this: ILoadOptionsFunctions,
+				filter?: string,
+			): Promise<INodeListSearchResult> {
+				const response = await this.helpers.httpRequestWithAuthentication.call(this, 'cannyApi', {
+					method: 'POST',
+					url: 'https://canny.io/api/v2/users/list',
+					body: { limit: 100 },
+					json: true,
+				});
+
+				const users = Array.isArray(response.users)
+					? (response.users as Array<{ name: string; email: string | null; id: string }>)
+					: [];
+
+				const filtered = filter
+					? users.filter(
+							(user) =>
+								user.name.toLowerCase().includes(filter.toLowerCase()) ||
+								(user.email ?? '').toLowerCase().includes(filter.toLowerCase()),
+						)
+					: users;
+
+				return {
+					results: filtered.map((user) => ({
+						name: user.email ? `${user.name} (${user.email})` : user.name,
+						value: user.id,
 					})),
 				};
 			},

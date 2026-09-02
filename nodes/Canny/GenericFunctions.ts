@@ -54,7 +54,9 @@ function buildPostCreateRequest(this: IExecuteFunctions, i: number): RequestPara
 	}) as string;
 	const title = this.getNodeParameter('title', i) as string;
 	const details = this.getNodeParameter('details', i, '') as string;
-	const authorID = this.getNodeParameter('authorID', i) as string;
+	const authorID = this.getNodeParameter('authorID', i, undefined, {
+		extractValue: true,
+	}) as string;
 	return {
 		endpoint: '/posts/create',
 		body: { boardID, title, details, authorID },
@@ -62,7 +64,9 @@ function buildPostCreateRequest(this: IExecuteFunctions, i: number): RequestPara
 }
 
 function buildPostGetRequest(this: IExecuteFunctions, i: number): RequestParams {
-	const postID = this.getNodeParameter('postID', i) as string;
+	const postID = this.getNodeParameter('postID', i, undefined, {
+		extractValue: true,
+	}) as string;
 	return { endpoint: '/posts/retrieve', body: { id: postID } };
 }
 
@@ -76,7 +80,9 @@ function buildPostGetAllRequest(this: IExecuteFunctions, i: number): RequestPara
 }
 
 function buildPostUpdateRequest(this: IExecuteFunctions, i: number): RequestParams {
-	const postID = this.getNodeParameter('postID', i) as string;
+	const postID = this.getNodeParameter('postID', i, undefined, {
+		extractValue: true,
+	}) as string;
 	const title = this.getNodeParameter('title', i, '') as string;
 	const details = this.getNodeParameter('details', i, '') as string;
 	const eta = this.getNodeParameter('eta', i, '') as string;
@@ -89,13 +95,19 @@ function buildPostUpdateRequest(this: IExecuteFunctions, i: number): RequestPara
 }
 
 function buildPostDeleteRequest(this: IExecuteFunctions, i: number): RequestParams {
-	const postID = this.getNodeParameter('postID', i) as string;
+	const postID = this.getNodeParameter('postID', i, undefined, {
+		extractValue: true,
+	}) as string;
 	return { endpoint: '/posts/delete', body: { postID } };
 }
 
 function buildPostChangeStatusRequest(this: IExecuteFunctions, i: number): RequestParams {
-	const postID = this.getNodeParameter('postID', i) as string;
-	const changerID = this.getNodeParameter('changerID', i) as string;
+	const postID = this.getNodeParameter('postID', i, undefined, {
+		extractValue: true,
+	}) as string;
+	const changerID = this.getNodeParameter('changerID', i, undefined, {
+		extractValue: true,
+	}) as string;
 	const status = this.getNodeParameter('status', i) as string;
 	const shouldNotifyVoters = this.getNodeParameter('shouldNotifyVoters', i, false) as boolean;
 	const commentValue = this.getNodeParameter('commentValue', i, '') as string;
@@ -222,7 +234,9 @@ function buildPortalCommentRequest(
 		return { endpoint: '/comments/retrieve', body: { id: commentID } };
 	}
 	if (operation === 'getAll') {
-		const postID = this.getNodeParameter('postID', i, '') as string;
+		const postID = this.getNodeParameter('postID', i, '', {
+			extractValue: true,
+		}) as string;
 		const boardID = this.getNodeParameter('boardID', i, '', {
 			extractValue: true,
 		}) as string;
@@ -237,8 +251,12 @@ function buildPortalCommentRequest(
 		};
 	}
 	if (operation === 'create') {
-		const postID = this.getNodeParameter('postID', i) as string;
-		const authorID = this.getNodeParameter('authorID', i) as string;
+		const postID = this.getNodeParameter('postID', i, undefined, {
+			extractValue: true,
+		}) as string;
+		const authorID = this.getNodeParameter('authorID', i, undefined, {
+			extractValue: true,
+		}) as string;
 		const value = this.getNodeParameter('value', i, '') as string;
 		const parentID = this.getNodeParameter('parentID', i, '') as string;
 		const internal = this.getNodeParameter('internal', i, false) as boolean;
@@ -449,9 +467,6 @@ export async function fetchSingle(
 		i,
 	);
 }
-// ---------------------------------------------------------------------
-// Fetch Single
-// ---------------------------------------------------------------------
 
 export async function fetchResultsForItem(
 	this: IExecuteFunctions,

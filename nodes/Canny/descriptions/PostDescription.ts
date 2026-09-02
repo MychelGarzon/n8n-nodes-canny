@@ -1,5 +1,5 @@
 import { INodeProperties } from 'n8n-workflow';
-import { showFor, showForWith, idField, operationsField } from './DisplayOptions';
+import { showFor, showForWith, operationsField } from './DisplayOptions';
 import { resourceLocatorField } from '../../shared/NodeConstants';
 
 const RESOURCE = 'post';
@@ -24,6 +24,10 @@ export const postFields: INodeProperties[] = [
 		required: true,
 		description: 'The board this post belongs to',
 	}),
+	resourceLocatorField('User', 'authorID', 'searchUsers', RESOURCE, ['create'], {
+		required: true,
+		description: 'The Canny user to post as',
+	}),
 	{
 		displayName: 'Title',
 		name: 'title',
@@ -40,16 +44,16 @@ export const postFields: INodeProperties[] = [
 		default: '',
 		displayOptions: showFor(RESOURCE, ['create']),
 	},
-	{
-		displayName: 'Author ID',
-		name: 'authorID',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(RESOURCE, ['create']),
-		description: 'The Canny user ID to post as',
-	},
-	idField('Post ID', 'postID', RESOURCE, ['get', 'update', 'delete', 'changeStatus']),
+	resourceLocatorField(
+		'Post',
+		'postID',
+		'searchPosts',
+		RESOURCE,
+		['get', 'update', 'delete', 'changeStatus'],
+		{
+			required: true,
+		},
+	),
 	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['getAll'], {
 		description:
 			'Optional — filter posts to a single board. Leave empty to list across all boards.',
@@ -105,15 +109,10 @@ export const postFields: INodeProperties[] = [
 		displayOptions: showFor(RESOURCE, ['update']),
 		description: 'Whether the ETA should be visible to all users',
 	},
-	{
-		displayName: 'Changer ID',
-		name: 'changerID',
-		type: 'string',
-		default: '',
+	resourceLocatorField('User', 'changerID', 'searchUsers', RESOURCE, ['changeStatus'], {
 		required: true,
-		displayOptions: showFor(RESOURCE, ['changeStatus']),
-		description: 'The Canny user ID of the admin recorded as making this change',
-	},
+		description: 'The Canny user recorded as making this change',
+	}),
 	{
 		displayName: 'Status',
 		name: 'status',
