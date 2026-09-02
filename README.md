@@ -108,6 +108,10 @@ For general help getting started with n8n, see the [Try it out](https://docs.n8n
 
 ## Version history
 
+### 0.2.5
+
+Removed Board's non-functional Return All/Limit fields (Canny's boards/list endpoint doesn't support pagination). Normalized Return All defaults and Limit bounds across Post, Category, Idea, and Portal Comment. Migrated Board and Category onto the shared field-definition helpers for consistency with the rest of the codebase.
+
 ### 0.2.4
 
 Extracted shared icon, credential, and dropdown-field helpers to reduce code duplication across resource description files. Added Jest unit test coverage for all request builders (Post, Board, Category, Idea, Portal Comment) and for the Canny Trigger's webhook signature verification.
