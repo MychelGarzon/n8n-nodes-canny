@@ -56,6 +56,10 @@ Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes
 - Create
 - Delete
 
+### User
+
+- Get Many
+
 ### Canny Trigger
 
 Starts a workflow when a Canny event occurs (post created, status changed, comment created, vote cast, and more). Requires manual webhook setup — see [Usage](#usage) below.
@@ -79,12 +83,16 @@ Tested against n8n using n8n-workflow's programmatic node style (`@n8n/node-cli`
 
 ## Usage
 
+### Board, User, and Post fields
+
+Board, User (Author/Changer), and Post ID fields use n8n's resource locator: pick from a searchable list, or switch to "By ID" and paste a raw Canny ID directly.
+
 ### Pagination
 
 Canny's API has two different pagination styles depending on the resource:
 
 - **Post, Category** use skip-based pagination (`skip`/`limit`/`hasMore`).
-- **Portal Comment, Idea** use cursor-based pagination (`cursor`/`hasNextPage`).
+- **Portal Comment, Idea, User** use cursor-based pagination (`cursor`/`hasNextPage`).
 
 This node handles both automatically — just use the **Return All** and **Limit** fields on any "Get Many" operation.
 
@@ -99,6 +107,16 @@ Canny has no API for registering webhooks, so setup is manual:
 3. In your Canny dashboard, go to **Settings > API > Webhooks**, and paste the URL there.
 4. Canny will send every subscribed event to that same URL — this node automatically verifies each payload's signature and filters out any event that doesn't match your selected **Event**, so only the one you configured actually starts the workflow.
 
+### Using this node with AI Agents
+
+This node has `usableAsTool: true` and works as a tool for n8n's AI Agent node. A few things to know:
+
+- **Each operation needs its own dedicated tool node.** Don't wire a single generic Canny tool node into the Agent and expect the model to pick Resource/Operation freely — set the Resource and Operation explicitly on each tool node (e.g. one node configured as "Post → Change Status", a separate node as "User → Get Many"), then connect each to the Agent's **Tool** input separately.
+- **Leave ID fields set to "Defined automatically by the model."** For any field that's a resource locator (Board, User, Post), the AI tool interface only supports "By ID" mode — the interactive "From list" picker isn't available to a model, since browsing a dropdown requires human interaction. The agent must supply a real Canny ID as a plain string.
+- **Give the agent a way to discover real IDs first.** Since the model can't browse pickers, connect a "Get Many" tool for whichever resource it needs an ID for (e.g. a "User → Get Many" tool so it can look up a user's ID before calling an operation that requires one). Without that, the agent has no way to know a valid ID and may either ask you for it or hallucinate a plausible-looking one.
+
+For example, to let an agent change a post's status, you'd typically connect three separate tool nodes: one for **Post → Get Many** (to find the post), one for **User → Get Many** (to find the user), and one for **Post → Change Status** (with `postID`, `changerID`, `status`, and `commentValue` all left as model-defined parameters).
+
 For general help getting started with n8n, see the [Try it out](https://docs.n8n.io/try-it-out/) documentation.
 
 ## Resources
@@ -107,6 +125,10 @@ For general help getting started with n8n, see the [Try it out](https://docs.n8n
 - [Canny API reference](https://developers.canny.io/api-reference)
 
 ## Version history
+
+### 0.2.9
+
+Added a User resource (Get Many) so AI agents can discover real Canny user IDs. Added resource-locator pickers (searchable dropdowns) for Board, User, and Post ID fields across all resources, replacing raw text ID entry. Improved API error messages to include the failing endpoint and HTTP status code. Added missing field placeholders throughout. Clarified resource-locator field descriptions for AI agent usage. Documented AI Agent tool-wiring patterns.
 
 ### 0.2.6 – 0.2.7
 
