@@ -10,138 +10,216 @@ function mockExecuteFunctions(params: Record<string, unknown>): IExecuteFunction
 	} as unknown as IExecuteFunctions;
 }
 
-describe('buildRequestParams — post', () => {
-	it('builds a create request with all fields', () => {
-		const ctx = mockExecuteFunctions({
+interface HappyPathCase {
+	label: string;
+	resource: string;
+	operation: string;
+	params: Record<string, unknown>;
+	expectedEndpoint: string;
+	expectedBody: Record<string, unknown>;
+	expectedResponseKey?: string;
+	expectedPaginationStyle?: string;
+}
+
+const happyPathCases: HappyPathCase[] = [
+	{
+		label: 'post create',
+		resource: 'post',
+		operation: 'create',
+		params: {
 			boardID: 'board123',
 			title: 'My Post',
 			details: 'Some details',
 			authorID: 'author456',
-		});
-
-		const result = buildRequestParams.call(ctx, 'post', 'create', 0);
-
-		expect(result.endpoint).toBe('/posts/create');
-		expect(result.body).toEqual({
+		},
+		expectedEndpoint: '/posts/create',
+		expectedBody: {
 			boardID: 'board123',
 			title: 'My Post',
 			details: 'Some details',
 			authorID: 'author456',
-		});
+		},
+	},
+	{
+		label: 'post get',
+		resource: 'post',
+		operation: 'get',
+		params: { postID: 'post789' },
+		expectedEndpoint: '/posts/retrieve',
+		expectedBody: { id: 'post789' },
+	},
+	{
+		label: 'post getAll with boardID',
+		resource: 'post',
+		operation: 'getAll',
+		params: { boardID: 'board123' },
+		expectedEndpoint: '/posts/list',
+		expectedBody: { boardID: 'board123' },
+		expectedResponseKey: 'posts',
+	},
+	{
+		label: 'post changeStatus',
+		resource: 'post',
+		operation: 'changeStatus',
+		params: {
+			postID: 'post789',
+			changerID: 'admin1',
+			status: 'planned',
+			shouldNotifyVoters: true,
+			commentValue: 'Great idea!',
+		},
+		expectedEndpoint: '/posts/change_status',
+		expectedBody: {
+			postID: 'post789',
+			changerID: 'admin1',
+			status: 'planned',
+			shouldNotifyVoters: true,
+			commentValue: 'Great idea!',
+		},
+	},
+	{
+		label: 'post delete',
+		resource: 'post',
+		operation: 'delete',
+		params: { postID: 'post789' },
+		expectedEndpoint: '/posts/delete',
+		expectedBody: { postID: 'post789' },
+	},
+	{
+		label: 'board getAll',
+		resource: 'board',
+		operation: 'getAll',
+		params: {},
+		expectedEndpoint: '/boards/list',
+		expectedBody: {},
+		expectedResponseKey: 'boards',
+		expectedPaginationStyle: 'none',
+	},
+	{
+		label: 'board get',
+		resource: 'board',
+		operation: 'get',
+		params: { boardID: 'board123' },
+		expectedEndpoint: '/boards/retrieve',
+		expectedBody: { id: 'board123' },
+	},
+	{
+		label: 'category get',
+		resource: 'category',
+		operation: 'get',
+		params: { categoryID: 'cat123' },
+		expectedEndpoint: '/categories/retrieve',
+		expectedBody: { id: 'cat123' },
+	},
+	{
+		label: 'category getAll with boardID',
+		resource: 'category',
+		operation: 'getAll',
+		params: { boardID: 'board123' },
+		expectedEndpoint: '/categories/list',
+		expectedBody: { boardID: 'board123' },
+		expectedResponseKey: 'categories',
+	},
+	{
+		label: 'category create with parentID',
+		resource: 'category',
+		operation: 'create',
+		params: {
+			boardID: 'board123',
+			name: 'Sub Category',
+			parentID: 'parent456',
+			subscribeAdmins: false,
+		},
+		expectedEndpoint: '/categories/create',
+		expectedBody: {
+			boardID: 'board123',
+			name: 'Sub Category',
+			parentID: 'parent456',
+			subscribeAdmins: false,
+		},
+	},
+	{
+		label: 'category delete',
+		resource: 'category',
+		operation: 'delete',
+		params: { categoryID: 'cat123' },
+		expectedEndpoint: '/categories/delete',
+		expectedBody: { categoryID: 'cat123' },
+	},
+	{
+		label: 'portalComment getAll uses v2 endpoint',
+		resource: 'portalComment',
+		operation: 'getAll',
+		params: { postID: '', boardID: '' },
+		expectedEndpoint: 'https://canny.io/api/v2/comments/list',
+		expectedBody: {},
+		expectedResponseKey: 'items',
+		expectedPaginationStyle: 'cursor',
+	},
+	{
+		label: 'idea get',
+		resource: 'idea',
+		operation: 'get',
+		params: { ideaID: 'idea123' },
+		expectedEndpoint: '/ideas/retrieve',
+		expectedBody: { id: 'idea123' },
+	},
+	{
+		label: 'idea getAll with search and parentID',
+		resource: 'idea',
+		operation: 'getAll',
+		params: { search: 'dark mode', parentID: 'parent789' },
+		expectedEndpoint: '/ideas/list',
+		expectedBody: { search: 'dark mode', parentID: 'parent789' },
+		expectedResponseKey: 'items',
+		expectedPaginationStyle: 'cursor',
+	},
+	{
+		label: 'idea delete uses "id" as the key',
+		resource: 'idea',
+		operation: 'delete',
+		params: { ideaID: 'idea123' },
+		expectedEndpoint: '/ideas/delete',
+		expectedBody: { id: 'idea123' },
+	},
+];
+
+describe.each(happyPathCases)('buildRequestParams — $label', (testCase) => {
+	it('builds the expected endpoint, body, responseKey, and paginationStyle', () => {
+		const ctx = mockExecuteFunctions(testCase.params);
+		const result = buildRequestParams.call(ctx, testCase.resource, testCase.operation, 0);
+
+		expect(result.endpoint).toBe(testCase.expectedEndpoint);
+		expect(result.body).toEqual(testCase.expectedBody);
+		if (testCase.expectedResponseKey) {
+			expect(result.responseKey).toBe(testCase.expectedResponseKey);
+		}
+		if (testCase.expectedPaginationStyle) {
+			expect(result.paginationStyle).toBe(testCase.expectedPaginationStyle);
+		}
 	});
+});
 
-	it('builds a get request using the post ID as "id"', () => {
-		const ctx = mockExecuteFunctions({ postID: 'post789' });
-		const result = buildRequestParams.call(ctx, 'post', 'get', 0);
-
-		expect(result.endpoint).toBe('/posts/retrieve');
-		expect(result.body).toEqual({ id: 'post789' });
-	});
-
-	it('omits boardID from getAll body when not provided', () => {
+describe('optional field omission', () => {
+	it('post getAll omits boardID when not provided', () => {
 		const ctx = mockExecuteFunctions({ boardID: '' });
 		const result = buildRequestParams.call(ctx, 'post', 'getAll', 0);
-
-		expect(result.endpoint).toBe('/posts/list');
 		expect(result.body).toEqual({});
-		expect(result.responseKey).toBe('posts');
 	});
 
-	it('includes boardID in getAll body when provided', () => {
-		const ctx = mockExecuteFunctions({ boardID: 'board123' });
-		const result = buildRequestParams.call(ctx, 'post', 'getAll', 0);
-
-		expect(result.body).toEqual({ boardID: 'board123' });
-	});
-
-	it('omits optional fields from update body when not provided', () => {
+	it('post update omits title/details/eta when not provided', () => {
 		const ctx = mockExecuteFunctions({ postID: 'post789', etaPublic: false });
 		const result = buildRequestParams.call(ctx, 'post', 'update', 0);
-
-		expect(result.endpoint).toBe('/posts/update');
 		expect(result.body).toEqual({ postID: 'post789', etaPublic: false });
 	});
 
-	it('builds a changeStatus request with all fields', () => {
-		const ctx = mockExecuteFunctions({
-			postID: 'post789',
-			changerID: 'admin1',
-			status: 'planned',
-			shouldNotifyVoters: true,
-			commentValue: 'Great idea!',
-		});
-
-		const result = buildRequestParams.call(ctx, 'post', 'changeStatus', 0);
-
-		expect(result.endpoint).toBe('/posts/change_status');
-		expect(result.body).toEqual({
-			postID: 'post789',
-			changerID: 'admin1',
-			status: 'planned',
-			shouldNotifyVoters: true,
-			commentValue: 'Great idea!',
-		});
-	});
-
-	it('builds a delete request', () => {
-		const ctx = mockExecuteFunctions({ postID: 'post789' });
-		const result = buildRequestParams.call(ctx, 'post', 'delete', 0);
-
-		expect(result.endpoint).toBe('/posts/delete');
-		expect(result.body).toEqual({ postID: 'post789' });
-	});
-
-	it('throws NodeOperationError for an unrecognized post operation', () => {
-		const ctx = mockExecuteFunctions({});
-		expect(() => buildRequestParams.call(ctx, 'post', 'bogus', 0)).toThrow();
-	});
-});
-
-describe('buildRequestParams — board', () => {
-	it('builds a getAll request with no body and "none" pagination', () => {
-		const ctx = mockExecuteFunctions({});
-		const result = buildRequestParams.call(ctx, 'board', 'getAll', 0);
-
-		expect(result.endpoint).toBe('/boards/list');
-		expect(result.body).toEqual({});
-		expect(result.paginationStyle).toBe('none');
-	});
-
-	it('builds a get request using boardID as "id"', () => {
-		const ctx = mockExecuteFunctions({ boardID: 'board123' });
-		const result = buildRequestParams.call(ctx, 'board', 'get', 0);
-
-		expect(result.endpoint).toBe('/boards/retrieve');
-		expect(result.body).toEqual({ id: 'board123' });
-	});
-});
-
-describe('buildRequestParams — category', () => {
-	it('builds a get request', () => {
-		const ctx = mockExecuteFunctions({ categoryID: 'cat123' });
-		const result = buildRequestParams.call(ctx, 'category', 'get', 0);
-
-		expect(result.endpoint).toBe('/categories/retrieve');
-		expect(result.body).toEqual({ id: 'cat123' });
-	});
-
-	it('builds a getAll request, omitting boardID when not provided', () => {
+	it('category getAll omits boardID when not provided', () => {
 		const ctx = mockExecuteFunctions({ boardID: '' });
 		const result = buildRequestParams.call(ctx, 'category', 'getAll', 0);
-
-		expect(result.endpoint).toBe('/categories/list');
 		expect(result.body).toEqual({});
-		expect(result.responseKey).toBe('categories');
 	});
 
-	it('includes boardID in getAll body when provided', () => {
-		const ctx = mockExecuteFunctions({ boardID: 'board123' });
-		const result = buildRequestParams.call(ctx, 'category', 'getAll', 0);
-
-		expect(result.body).toEqual({ boardID: 'board123' });
-	});
-
-	it('builds a create request, omitting parentID when not provided', () => {
+	it('category create omits parentID when not provided', () => {
 		const ctx = mockExecuteFunctions({
 			boardID: 'board123',
 			name: 'New Category',
@@ -149,97 +227,25 @@ describe('buildRequestParams — category', () => {
 			subscribeAdmins: true,
 		});
 		const result = buildRequestParams.call(ctx, 'category', 'create', 0);
-
-		expect(result.endpoint).toBe('/categories/create');
 		expect(result.body).toEqual({
 			boardID: 'board123',
 			name: 'New Category',
 			subscribeAdmins: true,
 		});
 	});
+});
 
-	it('includes parentID in create body when provided', () => {
-		const ctx = mockExecuteFunctions({
-			boardID: 'board123',
-			name: 'Sub Category',
-			parentID: 'parent456',
-			subscribeAdmins: false,
-		});
-		const result = buildRequestParams.call(ctx, 'category', 'create', 0);
-
-		expect(result.body).toEqual({
-			boardID: 'board123',
-			name: 'Sub Category',
-			parentID: 'parent456',
-			subscribeAdmins: false,
-		});
-	});
-
-	it('builds a delete request', () => {
-		const ctx = mockExecuteFunctions({ categoryID: 'cat123' });
-		const result = buildRequestParams.call(ctx, 'category', 'delete', 0);
-
-		expect(result.endpoint).toBe('/categories/delete');
-		expect(result.body).toEqual({ categoryID: 'cat123' });
-	});
-
-	it('throws for an unrecognized category operation', () => {
+describe('invalid operations and resources', () => {
+	it.each([
+		['post', 'bogus'],
+		['board', 'bogus'],
+		['category', 'bogus'],
+		['idea', 'bogus'],
+	])('throws for an unrecognized %s operation "%s"', (resource, operation) => {
 		const ctx = mockExecuteFunctions({});
-		expect(() => buildRequestParams.call(ctx, 'category', 'bogus', 0)).toThrow();
-	});
-});
-
-describe('buildRequestParams — portalComment', () => {
-	it('uses the v2 endpoint for getAll', () => {
-		const ctx = mockExecuteFunctions({ postID: '', boardID: '' });
-		const result = buildRequestParams.call(ctx, 'portalComment', 'getAll', 0);
-
-		expect(result.endpoint).toBe('https://canny.io/api/v2/comments/list');
-		expect(result.paginationStyle).toBe('cursor');
-	});
-});
-
-describe('buildRequestParams — idea', () => {
-	it('builds a get request', () => {
-		const ctx = mockExecuteFunctions({ ideaID: 'idea123' });
-		const result = buildRequestParams.call(ctx, 'idea', 'get', 0);
-
-		expect(result.endpoint).toBe('/ideas/retrieve');
-		expect(result.body).toEqual({ id: 'idea123' });
+		expect(() => buildRequestParams.call(ctx, resource, operation, 0)).toThrow();
 	});
 
-	it('builds a getAll request with cursor pagination, no filters', () => {
-		const ctx = mockExecuteFunctions({ search: '', parentID: '' });
-		const result = buildRequestParams.call(ctx, 'idea', 'getAll', 0);
-
-		expect(result.endpoint).toBe('/ideas/list');
-		expect(result.body).toEqual({});
-		expect(result.responseKey).toBe('items');
-		expect(result.paginationStyle).toBe('cursor');
-	});
-
-	it('includes search and parentID in getAll body when provided', () => {
-		const ctx = mockExecuteFunctions({ search: 'dark mode', parentID: 'parent789' });
-		const result = buildRequestParams.call(ctx, 'idea', 'getAll', 0);
-
-		expect(result.body).toEqual({ search: 'dark mode', parentID: 'parent789' });
-	});
-
-	it('builds a delete request using "id" as the key', () => {
-		const ctx = mockExecuteFunctions({ ideaID: 'idea123' });
-		const result = buildRequestParams.call(ctx, 'idea', 'delete', 0);
-
-		expect(result.endpoint).toBe('/ideas/delete');
-		expect(result.body).toEqual({ id: 'idea123' });
-	});
-
-	it('throws for an unrecognized idea operation', () => {
-		const ctx = mockExecuteFunctions({});
-		expect(() => buildRequestParams.call(ctx, 'idea', 'bogus', 0)).toThrow();
-	});
-});
-
-describe('buildRequestParams — unknown resource', () => {
 	it('throws for an unrecognized resource', () => {
 		const ctx = mockExecuteFunctions({});
 		expect(() => buildRequestParams.call(ctx, 'bogus', 'getAll', 0)).toThrow();
