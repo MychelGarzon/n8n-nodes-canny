@@ -51,6 +51,7 @@ export const categoryFields: INodeProperties[] = [
 		name: 'parentID',
 		type: 'string',
 		default: '',
+		placeholder: 'e.g. 6a2889c586d7b8843bf4cf01',
 		displayOptions: showFor(RESOURCE, ['create']),
 	},
 	{

@@ -41,6 +41,7 @@ export function idField(
 		type: 'string',
 		default: '',
 		required: true,
+		placeholder: 'e.g. 6a2889c586d7b8843bf4cf01',
 		displayOptions: showFor(resource, operations),
 	};
 	if (description) field.description = description;

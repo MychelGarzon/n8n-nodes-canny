@@ -22,6 +22,7 @@ export const ideaFields: INodeProperties[] = [
 		name: 'search',
 		type: 'string',
 		default: '',
+		placeholder: 'e.g. dark mode',
 		displayOptions: showFor(RESOURCE, ['getAll']),
 		description:
 			'Optional — free-text search. Note: search does not support pagination or sorting.',
@@ -31,6 +32,7 @@ export const ideaFields: INodeProperties[] = [
 		name: 'parentID',
 		type: 'string',
 		default: '',
+		placeholder: 'e.g. 6a2889c586d7b8843bf4cf01',
 		displayOptions: showFor(RESOURCE, ['getAll']),
 		description: 'Optional — only fetch ideas that are children of this idea',
 	},
