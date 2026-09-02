@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-canny",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "n8n community node for Canny (canny.io) — product feedback, feature requests, and roadmap management. Not affiliated with Canny Inc.",
   "license": "MIT",
   "homepage": "https://github.com/MychelGarzon/n8n-nodes-canny",
@@ -28,7 +28,7 @@
     "prepublishOnly": "n8n-node prerelease",
     "test": "jest"
   },
-    "files": [
+  "files": [
     "dist",
     "!dist/**/__tests__/**",
     "!dist/tsconfig.tsbuildinfo"
