@@ -44,37 +44,92 @@ export interface RequestParams {
 	paginationStyle?: 'skip' | 'cursor' | 'none';
 }
 
-function buildPostRequest(this: IExecuteFunctions, operation: string, i: number): RequestParams {
-	if (operation === 'create') {
-		const boardID = this.getNodeParameter('boardID', i) as string;
-		const title = this.getNodeParameter('title', i) as string;
-		const details = this.getNodeParameter('details', i, '') as string;
-		const authorID = this.getNodeParameter('authorID', i) as string;
-		return {
-			endpoint: '/posts/create',
-			body: { boardID, title, details, authorID },
-		};
-	}
-	if (operation === 'get') {
-		const postID = this.getNodeParameter('postID', i) as string;
-		return { endpoint: '/posts/retrieve', body: { id: postID } };
-	}
-	if (operation === 'getAll') {
-		const boardID = this.getNodeParameter('boardID', i, '') as string;
-		const body: IDataObject = {};
-		if (boardID) body.boardID = boardID;
-		return { endpoint: '/posts/list', body, responseKey: 'posts' };
-	}
+// ---------------------------------------------------------------------
+// Post
+// ---------------------------------------------------------------------
 
-	throw new NodeOperationError(
-		this.getNode(),
-		`The post operation "${operation}" is not recognized.`,
-		{
-			itemIndex: i,
-			description: "Select a valid 'Operation' from the dropdown menu to continue.",
-		},
-	);
+function buildPostCreateRequest(this: IExecuteFunctions, i: number): RequestParams {
+	const boardID = this.getNodeParameter('boardID', i) as string;
+	const title = this.getNodeParameter('title', i) as string;
+	const details = this.getNodeParameter('details', i, '') as string;
+	const authorID = this.getNodeParameter('authorID', i) as string;
+	return {
+		endpoint: '/posts/create',
+		body: { boardID, title, details, authorID },
+	};
 }
+
+function buildPostGetRequest(this: IExecuteFunctions, i: number): RequestParams {
+	const postID = this.getNodeParameter('postID', i) as string;
+	return { endpoint: '/posts/retrieve', body: { id: postID } };
+}
+
+function buildPostGetAllRequest(this: IExecuteFunctions, i: number): RequestParams {
+	const boardID = this.getNodeParameter('boardID', i, '') as string;
+	const body: IDataObject = {};
+	if (boardID) body.boardID = boardID;
+	return { endpoint: '/posts/list', body, responseKey: 'posts' };
+}
+
+function buildPostUpdateRequest(this: IExecuteFunctions, i: number): RequestParams {
+	const postID = this.getNodeParameter('postID', i) as string;
+	const title = this.getNodeParameter('title', i, '') as string;
+	const details = this.getNodeParameter('details', i, '') as string;
+	const eta = this.getNodeParameter('eta', i, '') as string;
+	const etaPublic = this.getNodeParameter('etaPublic', i, false) as boolean;
+	const body: IDataObject = { postID, etaPublic };
+	if (title) body.title = title;
+	if (details) body.details = details;
+	if (eta) body.eta = eta;
+	return { endpoint: '/posts/update', body };
+}
+
+function buildPostDeleteRequest(this: IExecuteFunctions, i: number): RequestParams {
+	const postID = this.getNodeParameter('postID', i) as string;
+	return { endpoint: '/posts/delete', body: { postID } };
+}
+
+function buildPostChangeStatusRequest(this: IExecuteFunctions, i: number): RequestParams {
+	const postID = this.getNodeParameter('postID', i) as string;
+	const changerID = this.getNodeParameter('changerID', i) as string;
+	const status = this.getNodeParameter('status', i) as string;
+	const shouldNotifyVoters = this.getNodeParameter('shouldNotifyVoters', i, false) as boolean;
+	const commentValue = this.getNodeParameter('commentValue', i, '') as string;
+	const body: IDataObject = { postID, changerID, status, shouldNotifyVoters };
+	if (commentValue) body.commentValue = commentValue;
+	return { endpoint: '/posts/change_status', body };
+}
+
+const POST_OPERATION_BUILDERS: Record<
+	string,
+	(this: IExecuteFunctions, i: number) => RequestParams
+> = {
+	create: buildPostCreateRequest,
+	get: buildPostGetRequest,
+	getAll: buildPostGetAllRequest,
+	update: buildPostUpdateRequest,
+	delete: buildPostDeleteRequest,
+	changeStatus: buildPostChangeStatusRequest,
+};
+
+function buildPostRequest(this: IExecuteFunctions, operation: string, i: number): RequestParams {
+	const builder = POST_OPERATION_BUILDERS[operation];
+	if (!builder) {
+		throw new NodeOperationError(
+			this.getNode(),
+			`The post operation "${operation}" is not recognized.`,
+			{
+				itemIndex: i,
+				description: "Select a valid 'Operation' from the dropdown menu to continue.",
+			},
+		);
+	}
+	return builder.call(this, i);
+}
+
+// ---------------------------------------------------------------------
+// Board
+// ---------------------------------------------------------------------
 
 function buildBoardRequest(this: IExecuteFunctions, operation: string, i: number): RequestParams {
 	if (operation === 'get') {
@@ -99,6 +154,10 @@ function buildBoardRequest(this: IExecuteFunctions, operation: string, i: number
 		},
 	);
 }
+
+// ---------------------------------------------------------------------
+// Category
+// ---------------------------------------------------------------------
 
 function buildCategoryRequest(
 	this: IExecuteFunctions,
@@ -138,6 +197,10 @@ function buildCategoryRequest(
 		},
 	);
 }
+
+// ---------------------------------------------------------------------
+// Portal Comment
+// ---------------------------------------------------------------------
 
 function buildPortalCommentRequest(
 	this: IExecuteFunctions,
@@ -187,6 +250,10 @@ function buildPortalCommentRequest(
 	);
 }
 
+// ---------------------------------------------------------------------
+// Idea
+// ---------------------------------------------------------------------
+
 function buildIdeaRequest(this: IExecuteFunctions, operation: string, i: number): RequestParams {
 	if (operation === 'get') {
 		const ideaID = this.getNodeParameter('ideaID', i) as string;
@@ -220,6 +287,10 @@ function buildIdeaRequest(this: IExecuteFunctions, operation: string, i: number)
 	);
 }
 
+// ---------------------------------------------------------------------
+// Dispatch
+// ---------------------------------------------------------------------
+
 export function buildRequestParams(
 	this: IExecuteFunctions,
 	resource: string,
@@ -237,6 +308,10 @@ export function buildRequestParams(
 		description: "Select a valid 'Resource' from the dropdown menu to continue.",
 	});
 }
+
+// ---------------------------------------------------------------------
+// Fetching / pagination
+// ---------------------------------------------------------------------
 
 export async function fetchPaginated(
 	this: IExecuteFunctions,
@@ -321,25 +396,6 @@ export async function fetchPaginatedCursor(
 	return returnAll ? collected : collected.slice(0, limit);
 }
 
-export async function fetchSingle(
-	this: IExecuteFunctions,
-	endpoint: string,
-	body: IDataObject,
-	i: number,
-): Promise<IDataObject> {
-	await respectRateLimit();
-	return requestWithErrorHandling.call(
-		this,
-		{
-			method: 'POST',
-			url: endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`,
-			body,
-			json: true,
-		},
-		i,
-	);
-}
-
 export async function fetchUnpaginatedList(
 	this: IExecuteFunctions,
 	endpoint: string,
@@ -361,4 +417,23 @@ export async function fetchUnpaginatedList(
 	);
 
 	return (response[responseKey] as IDataObject[] | undefined) ?? [];
+}
+
+export async function fetchSingle(
+	this: IExecuteFunctions,
+	endpoint: string,
+	body: IDataObject,
+	i: number,
+): Promise<IDataObject> {
+	await respectRateLimit();
+	return requestWithErrorHandling.call(
+		this,
+		{
+			method: 'POST',
+			url: endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`,
+			body,
+			json: true,
+		},
+		i,
+	);
 }
