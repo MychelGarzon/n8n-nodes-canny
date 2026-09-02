@@ -132,6 +132,14 @@ This is an unofficial, community-built integration. It is not affiliated with, e
 
 ## Version history
 
+### 0.2.13
+
+Renamed the package from the unscoped `n8n-nodes-canny` to the scoped `@automiq/n8n-nodes-canny`, to reduce trademark-dispute risk on the unscoped npm namespace. The old package is now deprecated.
+
+### 0.2.10 – 0.2.12
+
+Fixed AI agent tool-orchestration gaps by making the Resource field's description explicitly enumerate valid values. Moved AI-agent "By ID" hints into the shared `resourceLocatorField` helper to reduce duplication. Excluded description files from strict duplication analysis (structural repetition inherent to n8n's declarative field style). Documented a known limitation around multi-step AI agent tool chaining.
+
 ### 0.2.9
 
 Added a User resource (Get Many) so AI agents can discover real Canny user IDs. Added resource-locator pickers (searchable dropdowns) for Board, User, and Post ID fields across all resources, replacing raw text ID entry. Improved API error messages to include the failing endpoint and HTTP status code. Added missing field placeholders throughout. Clarified resource-locator field descriptions for AI agent usage. Documented AI Agent tool-wiring patterns.
