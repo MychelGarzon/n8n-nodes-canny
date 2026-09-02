@@ -1,22 +1,12 @@
 import type {
-	IDataObject,
 	IExecuteFunctions,
 	INodeExecutionData,
 	INodeType,
 	INodeTypeDescription,
-	JsonObject,
 } from 'n8n-workflow';
 
-import { NodeApiError, NodeOperationError, NodeConnectionTypes } from 'n8n-workflow';
-
-import {
-	buildRequestParams,
-	fetchPaginated,
-	fetchPaginatedCursor,
-	fetchUnpaginatedList,
-	fetchSingle,
-	PAGINATED_OPERATIONS,
-} from './GenericFunctions';
+import { NodeConnectionTypes } from 'n8n-workflow';
+import { fetchResultsForItem, rethrowTypedError } from './GenericFunctions';
 
 import { CANNY_ICON, CANNY_CREDENTIALS, dropdownField } from '../shared/NodeConstants';
 import { boardOperations, boardFields } from './descriptions/BoardDescription';
@@ -77,27 +67,7 @@ export class Canny implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				const { endpoint, body, responseKey, paginationStyle } = buildRequestParams.call(
-					this,
-					resource,
-					operation,
-					i,
-				);
-
-				let results: IDataObject[];
-
-				if (PAGINATED_OPERATIONS.includes(operation) && responseKey) {
-					if (paginationStyle === 'cursor') {
-						results = await fetchPaginatedCursor.call(this, endpoint, body, responseKey, i);
-					} else if (paginationStyle === 'none') {
-						results = await fetchUnpaginatedList.call(this, endpoint, body, responseKey, i);
-					} else {
-						results = await fetchPaginated.call(this, endpoint, body, responseKey, i);
-					}
-				} else {
-					const single = await fetchSingle.call(this, endpoint, body, i);
-					results = [single];
-				}
+				const results = await fetchResultsForItem.call(this, resource, operation, i);
 
 				returnData.push(
 					...results.map((item) => ({
@@ -114,22 +84,7 @@ export class Canny implements INodeType {
 					continue;
 				}
 
-				if (error instanceof NodeOperationError) {
-					throw new NodeOperationError(this.getNode(), error.message, {
-						itemIndex: i,
-						description: error.description ?? undefined,
-					});
-				}
-
-				if (error instanceof NodeApiError) {
-					throw new NodeApiError(this.getNode(), error as unknown as JsonObject, {
-						itemIndex: i,
-					});
-				}
-
-				throw new NodeApiError(this.getNode(), error as unknown as JsonObject, {
-					itemIndex: i,
-				});
+				rethrowTypedError(this.getNode(), error, i);
 			}
 		}
 

@@ -437,3 +437,50 @@ export async function fetchSingle(
 		i,
 	);
 }
+// ---------------------------------------------------------------------
+// Fetch Single
+// ---------------------------------------------------------------------
+
+export async function fetchResultsForItem(
+	this: IExecuteFunctions,
+	resource: string,
+	operation: string,
+	i: number,
+): Promise<IDataObject[]> {
+	const { endpoint, body, responseKey, paginationStyle } = buildRequestParams.call(
+		this,
+		resource,
+		operation,
+		i,
+	);
+
+	if (!PAGINATED_OPERATIONS.includes(operation) || !responseKey) {
+		const single = await fetchSingle.call(this, endpoint, body, i);
+		return [single];
+	}
+
+	if (paginationStyle === 'cursor') {
+		return fetchPaginatedCursor.call(this, endpoint, body, responseKey, i);
+	}
+	if (paginationStyle === 'none') {
+		return fetchUnpaginatedList.call(this, endpoint, body, responseKey, i);
+	}
+	return fetchPaginated.call(this, endpoint, body, responseKey, i);
+}
+
+export function rethrowTypedError(
+	node: ReturnType<IExecuteFunctions['getNode']>,
+	error: unknown,
+	i: number,
+): never {
+	if (error instanceof NodeOperationError) {
+		throw new NodeOperationError(node, error.message, {
+			itemIndex: i,
+			description: error.description ?? undefined,
+		});
+	}
+	if (error instanceof NodeApiError) {
+		throw new NodeApiError(node, error as unknown as JsonObject, { itemIndex: i });
+	}
+	throw new NodeApiError(node, error as unknown as JsonObject, { itemIndex: i });
+}
