@@ -1,5 +1,8 @@
 {
-  "name": "n8n-nodes-canny",
+  "name": "@automiq/n8n-nodes-canny",
+  "publishConfig": {
+    "access": "public"
+  },
   "version": "0.2.12",
   "description": "n8n community node for Canny (canny.io) — product feedback, feature requests, and roadmap management. Not affiliated with Canny Inc.",
   "license": "MIT",
