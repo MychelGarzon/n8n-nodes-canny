@@ -3,7 +3,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "version": "0.2.12",
+  "version": "0.2.13",
   "description": "n8n community node for Canny (canny.io) — product feedback, feature requests, and roadmap management. Not affiliated with Canny Inc.",
   "license": "MIT",
   "homepage": "https://github.com/MychelGarzon/n8n-nodes-canny",
