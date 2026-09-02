@@ -1,4 +1,7 @@
 import { INodeProperties } from 'n8n-workflow';
+import { showFor, showForWith } from './DisplayOptions';
+
+const RESOURCE = 'portalComment';
 
 export const portalCommentOperations: INodeProperties[] = [
 	{
@@ -6,9 +9,7 @@ export const portalCommentOperations: INodeProperties[] = [
 		name: 'operation',
 		type: 'options',
 		noDataExpression: true,
-		displayOptions: {
-			show: { resource: ['portalComment'] },
-		},
+		displayOptions: { show: { resource: [RESOURCE] } },
 		options: [
 			{ name: 'Create', value: 'create', action: 'Create a portal comment' },
 			{ name: 'Delete', value: 'delete', action: 'Delete a portal comment' },
@@ -26,18 +27,14 @@ export const portalCommentFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['portalComment'], operation: ['get'] },
-		},
+		displayOptions: showFor(RESOURCE, ['get']),
 	},
 	{
 		displayName: 'Post ID',
 		name: 'postID',
 		type: 'string',
 		default: '',
-		displayOptions: {
-			show: { resource: ['portalComment'], operation: ['getAll'] },
-		},
+		displayOptions: showFor(RESOURCE, ['getAll']),
 		description: 'Optional — filter comments to a single post',
 	},
 	{
@@ -45,9 +42,7 @@ export const portalCommentFields: INodeProperties[] = [
 		name: 'boardID',
 		type: 'string',
 		default: '',
-		displayOptions: {
-			show: { resource: ['portalComment'], operation: ['getAll'] },
-		},
+		displayOptions: showFor(RESOURCE, ['getAll']),
 		description: 'Optional — filter comments to a single board',
 	},
 	{
@@ -55,9 +50,7 @@ export const portalCommentFields: INodeProperties[] = [
 		name: 'returnAll',
 		type: 'boolean',
 		default: false,
-		displayOptions: {
-			show: { resource: ['portalComment'], operation: ['getAll'] },
-		},
+		displayOptions: showFor(RESOURCE, ['getAll']),
 		description: 'Whether to return all results or only up to a given limit',
 	},
 	{
@@ -66,9 +59,7 @@ export const portalCommentFields: INodeProperties[] = [
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 100 },
 		default: 50,
-		displayOptions: {
-			show: { resource: ['portalComment'], operation: ['getAll'], returnAll: [false] },
-		},
+		displayOptions: showForWith(RESOURCE, ['getAll'], { returnAll: [false] }),
 		description: 'Max number of results to return',
 	},
 	{
@@ -77,9 +68,7 @@ export const portalCommentFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['portalComment'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 	},
 	{
 		displayName: 'Author ID',
@@ -87,9 +76,7 @@ export const portalCommentFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['portalComment'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 	},
 	{
 		displayName: 'Value',
@@ -97,9 +84,7 @@ export const portalCommentFields: INodeProperties[] = [
 		type: 'string',
 		typeOptions: { rows: 4 },
 		default: '',
-		displayOptions: {
-			show: { resource: ['portalComment'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 		description: 'The comment text. Must be under 2500 characters.',
 	},
 	{
@@ -107,9 +92,7 @@ export const portalCommentFields: INodeProperties[] = [
 		name: 'parentID',
 		type: 'string',
 		default: '',
-		displayOptions: {
-			show: { resource: ['portalComment'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 		description: 'Optional — set this if the comment is a reply',
 	},
 	{
@@ -117,9 +100,7 @@ export const portalCommentFields: INodeProperties[] = [
 		name: 'internal',
 		type: 'boolean',
 		default: false,
-		displayOptions: {
-			show: { resource: ['portalComment'], operation: ['create'] },
-		},
+		displayOptions: showFor(RESOURCE, ['create']),
 		description:
 			'Whether this comment is only visible internally. Only allowed if the author is a company member.',
 	},
@@ -129,8 +110,6 @@ export const portalCommentFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['portalComment'], operation: ['delete'] },
-		},
+		displayOptions: showFor(RESOURCE, ['delete']),
 	},
 ];

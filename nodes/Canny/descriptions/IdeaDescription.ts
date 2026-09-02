@@ -1,4 +1,7 @@
 import { INodeProperties } from 'n8n-workflow';
+import { showFor, showForWith } from './DisplayOptions';
+
+const RESOURCE = 'idea';
 
 export const ideaOperations: INodeProperties[] = [
 	{
@@ -6,9 +9,7 @@ export const ideaOperations: INodeProperties[] = [
 		name: 'operation',
 		type: 'options',
 		noDataExpression: true,
-		displayOptions: {
-			show: { resource: ['idea'] },
-		},
+		displayOptions: { show: { resource: [RESOURCE] } },
 		options: [
 			{ name: 'Delete', value: 'delete', action: 'Delete an idea' },
 			{ name: 'Get', value: 'get', action: 'Get an idea' },
@@ -25,9 +26,7 @@ export const ideaFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['idea'], operation: ['get'] },
-		},
+		displayOptions: showFor(RESOURCE, ['get']),
 		description: 'Provide either the Idea ID or the URL name',
 	},
 	{
@@ -35,9 +34,7 @@ export const ideaFields: INodeProperties[] = [
 		name: 'search',
 		type: 'string',
 		default: '',
-		displayOptions: {
-			show: { resource: ['idea'], operation: ['getAll'] },
-		},
+		displayOptions: showFor(RESOURCE, ['getAll']),
 		description:
 			'Optional — free-text search. Note: search does not support pagination or sorting.',
 	},
@@ -46,9 +43,7 @@ export const ideaFields: INodeProperties[] = [
 		name: 'parentID',
 		type: 'string',
 		default: '',
-		displayOptions: {
-			show: { resource: ['idea'], operation: ['getAll'] },
-		},
+		displayOptions: showFor(RESOURCE, ['getAll']),
 		description: 'Optional — only fetch ideas that are children of this idea',
 	},
 	{
@@ -56,9 +51,7 @@ export const ideaFields: INodeProperties[] = [
 		name: 'returnAll',
 		type: 'boolean',
 		default: false,
-		displayOptions: {
-			show: { resource: ['idea'], operation: ['getAll'] },
-		},
+		displayOptions: showFor(RESOURCE, ['getAll']),
 		description: 'Whether to return all results or only up to a given limit',
 	},
 	{
@@ -67,9 +60,7 @@ export const ideaFields: INodeProperties[] = [
 		type: 'number',
 		typeOptions: { minValue: 1, maxValue: 100 },
 		default: 50,
-		displayOptions: {
-			show: { resource: ['idea'], operation: ['getAll'], returnAll: [false] },
-		},
+		displayOptions: showForWith(RESOURCE, ['getAll'], { returnAll: [false] }),
 		description: 'Max number of results to return',
 	},
 	{
@@ -78,8 +69,6 @@ export const ideaFields: INodeProperties[] = [
 		type: 'string',
 		default: '',
 		required: true,
-		displayOptions: {
-			show: { resource: ['idea'], operation: ['delete'] },
-		},
+		displayOptions: showFor(RESOURCE, ['delete']),
 	},
 ];
