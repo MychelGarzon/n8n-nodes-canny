@@ -2,7 +2,7 @@ import { createHmac } from 'node:crypto';
 import type { IWebhookFunctions } from 'n8n-workflow';
 import { CannyTrigger } from '../../CannyTrigger/CannyTrigger.node';
 
-const API_KEY = 'test-api-key-12345';
+const FAKE_HMAC_KEY = 'unit-test-signing-value-abc';
 
 function mockWebhookFunctions(options: {
 	headers?: Record<string, string>;
@@ -16,8 +16,8 @@ function mockWebhookFunctions(options: {
 		getHeaderData: () => options.headers ?? {},
 		getBodyData: () => options.body ?? {},
 		getResponseObject: () => ({ status: statusMock }),
-		getCredentials: async () => ({ apiKey: API_KEY }),
-		getNodeParameter: (_name: string) => options.event ?? 'post.created',
+		getCredentials: async () => ({ apiKey: FAKE_HMAC_KEY }),
+		getNodeParameter: () => options.event ?? 'post.created',
 		helpers: {
 			returnJsonArray: (data: unknown) => [{ json: data }],
 		},
@@ -27,7 +27,7 @@ function mockWebhookFunctions(options: {
 }
 
 function signNonce(nonce: string): string {
-	return createHmac('sha256', API_KEY).update(nonce).digest('base64');
+	return createHmac('sha256', FAKE_HMAC_KEY).update(nonce).digest('base64');
 }
 
 describe('CannyTrigger.webhook', () => {
