@@ -155,7 +155,7 @@ function buildPortalCommentRequest(
 		if (postID) body.postID = postID;
 		if (boardID) body.boardID = boardID;
 		return {
-			endpoint: '/comments/list',
+			endpoint: 'https://canny.io/api/v2/comments/list',
 			body,
 			responseKey: 'items',
 			paginationStyle: 'cursor',
@@ -260,7 +260,7 @@ export async function fetchPaginated(
 			this,
 			{
 				method: 'POST',
-				url: `${BASE_URL}${endpoint}`,
+				url: endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`,
 				body: { ...body, limit: pageSize, skip },
 				json: true,
 			},
@@ -303,7 +303,7 @@ export async function fetchPaginatedCursor(
 			this,
 			{
 				method: 'POST',
-				url: `${BASE_URL}${endpoint}`,
+				url: endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`,
 				body: requestBody,
 				json: true,
 			},
@@ -332,7 +332,7 @@ export async function fetchSingle(
 		this,
 		{
 			method: 'POST',
-			url: `${BASE_URL}${endpoint}`,
+			url: endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`,
 			body,
 			json: true,
 		},
@@ -353,7 +353,7 @@ export async function fetchUnpaginatedList(
 		this,
 		{
 			method: 'POST',
-			url: `${BASE_URL}${endpoint}`,
+			url: endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`,
 			body,
 			json: true,
 		},
