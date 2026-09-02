@@ -182,6 +182,36 @@ const happyPathCases: HappyPathCase[] = [
 		expectedEndpoint: '/ideas/delete',
 		expectedBody: { id: 'idea123' },
 	},
+	{
+		label: 'portalComment get',
+		resource: 'portalComment',
+		operation: 'get',
+		params: { commentID: 'comment123' },
+		expectedEndpoint: '/comments/retrieve',
+		expectedBody: { id: 'comment123' },
+	},
+	{
+		label: 'portalComment create',
+		resource: 'portalComment',
+		operation: 'create',
+		params: {
+			postID: 'post789',
+			authorID: 'author456',
+			value: 'Nice work',
+			parentID: '',
+			internal: false,
+		},
+		expectedEndpoint: '/comments/create',
+		expectedBody: { postID: 'post789', authorID: 'author456', internal: false, value: 'Nice work' },
+	},
+	{
+		label: 'portalComment delete',
+		resource: 'portalComment',
+		operation: 'delete',
+		params: { commentID: 'comment123' },
+		expectedEndpoint: '/comments/delete',
+		expectedBody: { commentID: 'comment123' },
+	},
 ];
 
 describe.each(happyPathCases)('buildRequestParams — $label', (testCase) => {
@@ -241,6 +271,7 @@ describe('invalid operations and resources', () => {
 		['board', 'bogus'],
 		['category', 'bogus'],
 		['idea', 'bogus'],
+		['portalComment', 'bogus'],
 	])('throws for an unrecognized %s operation "%s"', (resource, operation) => {
 		const ctx = mockExecuteFunctions({});
 		expect(() => buildRequestParams.call(ctx, resource, operation, 0)).toThrow();
