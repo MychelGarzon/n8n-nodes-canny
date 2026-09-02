@@ -19,6 +19,34 @@ export async function respectRateLimit(): Promise<void> {
 	lastRequestTimestamp = Date.now();
 }
 
+function extractCannyErrorMessage(error: unknown): string | undefined {
+	const err = error as {
+		response?: { body?: unknown };
+		cause?: { response?: { body?: unknown } };
+	};
+
+	const body = err.response?.body ?? err.cause?.response?.body;
+
+	if (typeof body === 'string' && body.length > 0) {
+		return body;
+	}
+	if (body && typeof body === 'object') {
+		const obj = body as IDataObject;
+		if (typeof obj.error === 'string') return obj.error;
+		if (typeof obj.message === 'string') return obj.message;
+	}
+	return undefined;
+}
+
+function extractStatusCode(error: unknown): number | undefined {
+	const err = error as {
+		statusCode?: number;
+		response?: { statusCode?: number };
+		cause?: { response?: { statusCode?: number } };
+	};
+	return err.statusCode ?? err.response?.statusCode ?? err.cause?.response?.statusCode;
+}
+
 async function requestWithErrorHandling(
 	this: IExecuteFunctions,
 	options: IHttpRequestOptions,
@@ -31,12 +59,20 @@ async function requestWithErrorHandling(
 			options,
 		)) as IDataObject;
 	} catch (error) {
+		const statusCode = extractStatusCode(error);
+		const cannyMessage = extractCannyErrorMessage(error);
+
+		const descriptionParts: string[] = [];
+		if (statusCode) descriptionParts.push(`Canny responded with HTTP ${statusCode}.`);
+		descriptionParts.push(`Endpoint: ${options.method} ${options.url}`);
+		if (cannyMessage) descriptionParts.push(`Canny said: "${cannyMessage}"`);
+
 		throw new NodeApiError(this.getNode(), error as unknown as JsonObject, {
 			itemIndex: i,
+			description: descriptionParts.join(' '),
 		});
 	}
 }
-
 export interface RequestParams {
 	endpoint: string;
 	body: IDataObject;

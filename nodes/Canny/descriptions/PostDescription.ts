@@ -22,11 +22,13 @@ export const postOperations: INodeProperties[] = [
 export const postFields: INodeProperties[] = [
 	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['create'], {
 		required: true,
-		description: 'The board this post belongs to',
+		description:
+			'The board this post belongs to. If using "By ID", you must supply the real Canny board ID (e.g. from Board Get Many) — not the board\'s display name.',
 	}),
 	resourceLocatorField('User', 'authorID', 'searchUsers', RESOURCE, ['create'], {
 		required: true,
-		description: 'The Canny user to post as',
+		description:
+			'The Canny user to post as. If using "By ID", you must supply the real Canny user ID — not the user\'s name or email.',
 	}),
 	{
 		displayName: 'Title',
@@ -54,11 +56,13 @@ export const postFields: INodeProperties[] = [
 		['get', 'update', 'delete', 'changeStatus'],
 		{
 			required: true,
+			description:
+				'If using "By ID", you must supply the real Canny post ID (e.g. from Post Get Many) — not the post title.',
 		},
 	),
 	resourceLocatorField('Board', 'boardID', 'searchBoards', RESOURCE, ['getAll'], {
 		description:
-			'Optional — filter posts to a single board. Leave empty to list across all boards.',
+			'Optional — filter posts to a single board. Leave empty to list across all boards. If using "By ID", you must supply the real Canny board ID (e.g. from Board Get Many) — not the board\'s display name.',
 	}),
 	{
 		displayName: 'Return All',
@@ -115,7 +119,8 @@ export const postFields: INodeProperties[] = [
 	},
 	resourceLocatorField('User', 'changerID', 'searchUsers', RESOURCE, ['changeStatus'], {
 		required: true,
-		description: 'The Canny user recorded as making this change',
+		description:
+			'The Canny user recorded as making this change. If using "By ID", you must supply the real Canny user ID — not the user\'s name or email.',
 	}),
 	{
 		displayName: 'Status',
