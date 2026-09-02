@@ -179,6 +179,26 @@ function buildPostRequest(this: IExecuteFunctions, operation: string, i: number)
 	return builder.call(this, i);
 }
 
+function buildUserRequest(this: IExecuteFunctions, operation: string, i: number): RequestParams {
+	if (operation === 'getAll') {
+		return {
+			endpoint: 'https://canny.io/api/v2/users/list',
+			body: {},
+			responseKey: 'users',
+			paginationStyle: 'cursor',
+		};
+	}
+
+	throw new NodeOperationError(
+		this.getNode(),
+		`The user operation "${operation}" is not recognized.`,
+		{
+			itemIndex: i,
+			description: "Select a valid 'Operation' from the dropdown menu to continue.",
+		},
+	);
+}
+
 // ---------------------------------------------------------------------
 // Board
 // ---------------------------------------------------------------------
@@ -368,13 +388,13 @@ export function buildRequestParams(
 	if (resource === 'category') return buildCategoryRequest.call(this, operation, i);
 	if (resource === 'portalComment') return buildPortalCommentRequest.call(this, operation, i);
 	if (resource === 'idea') return buildIdeaRequest.call(this, operation, i);
+	if (resource === 'user') return buildUserRequest.call(this, operation, i);
 
 	throw new NodeOperationError(this.getNode(), `The 'Resource' "${resource}" is not recognized.`, {
 		itemIndex: i,
 		description: "Select a valid 'Resource' from the dropdown menu to continue.",
 	});
 }
-
 // ---------------------------------------------------------------------
 // Fetching / pagination
 // ---------------------------------------------------------------------

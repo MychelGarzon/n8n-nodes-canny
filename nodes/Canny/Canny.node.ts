@@ -10,6 +10,7 @@ import type {
 
 import { NodeConnectionTypes } from 'n8n-workflow';
 import { fetchResultsForItem, rethrowTypedError } from './GenericFunctions';
+import { userOperations, userFields } from './descriptions/UserDescription';
 
 import { CANNY_ICON, CANNY_CREDENTIALS, dropdownField } from '../shared/NodeConstants';
 import { boardOperations, boardFields } from './descriptions/BoardDescription';
@@ -45,6 +46,7 @@ export class Canny implements INodeType {
 					{ name: 'Idea', value: 'idea' },
 					{ name: 'Portal Comment', value: 'portalComment' },
 					{ name: 'Post', value: 'post' },
+					{ name: 'User', value: 'user' },
 				],
 				'post',
 			),
@@ -58,6 +60,8 @@ export class Canny implements INodeType {
 			...ideaFields,
 			...portalCommentOperations,
 			...portalCommentFields,
+			...userOperations,
+			...userFields,
 		],
 	};
 
