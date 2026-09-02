@@ -6,7 +6,7 @@ import {
 	IWebhookResponseData,
 	NodeConnectionTypes,
 } from 'n8n-workflow';
-import { createHmac } from 'node:crypto';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 
 import { CANNY_ICON, CANNY_CREDENTIALS, dropdownField } from '../shared/NodeConstants';
 
@@ -102,7 +102,13 @@ export class CannyTrigger implements INodeType {
 
 		const expectedSignature = createHmac('sha256', apiKey).update(nonce).digest('base64');
 
-		if (expectedSignature !== signature) {
+		const expectedBuffer = Buffer.from(expectedSignature);
+		const actualBuffer = Buffer.from(signature);
+		const signaturesMatch =
+			expectedBuffer.length === actualBuffer.length &&
+			timingSafeEqual(expectedBuffer, actualBuffer);
+
+		if (!signaturesMatch) {
 			const res = this.getResponseObject();
 			res.status(401).json({ message: 'Invalid Canny webhook signature' });
 			return { noWebhookResponse: true };

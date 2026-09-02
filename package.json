@@ -28,8 +28,9 @@
     "prepublishOnly": "n8n-node prerelease",
     "test": "jest"
   },
-  "files": [
-    "dist"
+    "files": [
+    "dist",
+    "!dist/**/__tests__/**"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,

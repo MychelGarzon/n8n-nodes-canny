@@ -7,7 +7,7 @@ import type {
 	JsonObject,
 } from 'n8n-workflow';
 
-import { NodeApiError, NodeConnectionTypes } from 'n8n-workflow';
+import { NodeApiError, NodeOperationError, NodeConnectionTypes } from 'n8n-workflow';
 
 import {
 	buildRequestParams,
@@ -112,6 +112,19 @@ export class Canny implements INodeType {
 						pairedItem: { item: i },
 					});
 					continue;
+				}
+
+				if (error instanceof NodeOperationError) {
+					throw new NodeOperationError(this.getNode(), error.message, {
+						itemIndex: i,
+						description: error.description ?? undefined,
+					});
+				}
+
+				if (error instanceof NodeApiError) {
+					throw new NodeApiError(this.getNode(), error as unknown as JsonObject, {
+						itemIndex: i,
+					});
 				}
 
 				throw new NodeApiError(this.getNode(), error as unknown as JsonObject, {
