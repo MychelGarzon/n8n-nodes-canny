@@ -60,3 +60,28 @@ export function returnAllField(resource: string): INodeProperties {
 		description: 'Whether to return all results or only up to a given limit',
 	};
 }
+export interface OperationOption {
+	name: string;
+	value: string;
+	action: string;
+}
+
+/**
+ * The standard Operation dropdown shown at the top of a resource's field
+ * list. Only the resource name, option list, and default value vary.
+ */
+export function operationsField(
+	resource: string,
+	options: OperationOption[],
+	defaultValue: string,
+): INodeProperties {
+	return {
+		displayName: 'Operation',
+		name: 'operation',
+		type: 'options',
+		noDataExpression: true,
+		displayOptions: { show: { resource: [resource] } },
+		options,
+		default: defaultValue,
+	};
+}

@@ -1,34 +1,22 @@
 import { INodeProperties } from 'n8n-workflow';
-import { showFor, showForWith } from './DisplayOptions';
+import { showFor, showForWith, idField, returnAllField, operationsField } from './DisplayOptions';
 
 const RESOURCE = 'idea';
 
 export const ideaOperations: INodeProperties[] = [
-	{
-		displayName: 'Operation',
-		name: 'operation',
-		type: 'options',
-		noDataExpression: true,
-		displayOptions: { show: { resource: [RESOURCE] } },
-		options: [
+	operationsField(
+		RESOURCE,
+		[
 			{ name: 'Delete', value: 'delete', action: 'Delete an idea' },
 			{ name: 'Get', value: 'get', action: 'Get an idea' },
 			{ name: 'Get Many', value: 'getAll', action: 'Get many ideas' },
 		],
-		default: 'getAll',
-	},
+		'getAll',
+	),
 ];
 
 export const ideaFields: INodeProperties[] = [
-	{
-		displayName: 'Idea ID',
-		name: 'ideaID',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(RESOURCE, ['get']),
-		description: 'Provide either the Idea ID or the URL name',
-	},
+	idField('Idea ID', 'ideaID', RESOURCE, ['get'], 'Provide either the Idea ID or the URL name'),
 	{
 		displayName: 'Search',
 		name: 'search',
@@ -46,14 +34,7 @@ export const ideaFields: INodeProperties[] = [
 		displayOptions: showFor(RESOURCE, ['getAll']),
 		description: 'Optional — only fetch ideas that are children of this idea',
 	},
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		default: false,
-		displayOptions: showFor(RESOURCE, ['getAll']),
-		description: 'Whether to return all results or only up to a given limit',
-	},
+	returnAllField(RESOURCE),
 	{
 		displayName: 'Limit',
 		name: 'limit',
@@ -63,12 +44,5 @@ export const ideaFields: INodeProperties[] = [
 		displayOptions: showForWith(RESOURCE, ['getAll'], { returnAll: [false] }),
 		description: 'Max number of results to return',
 	},
-	{
-		displayName: 'Idea ID',
-		name: 'ideaID',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(RESOURCE, ['delete']),
-	},
+	idField('Idea ID', 'ideaID', RESOURCE, ['delete']),
 ];

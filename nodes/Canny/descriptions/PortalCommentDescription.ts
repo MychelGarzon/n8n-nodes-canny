@@ -1,34 +1,23 @@
 import { INodeProperties } from 'n8n-workflow';
-import { showFor, showForWith } from './DisplayOptions';
+import { showFor, showForWith, idField, returnAllField, operationsField } from './DisplayOptions';
 
 const RESOURCE = 'portalComment';
 
 export const portalCommentOperations: INodeProperties[] = [
-	{
-		displayName: 'Operation',
-		name: 'operation',
-		type: 'options',
-		noDataExpression: true,
-		displayOptions: { show: { resource: [RESOURCE] } },
-		options: [
+	operationsField(
+		RESOURCE,
+		[
 			{ name: 'Create', value: 'create', action: 'Create a portal comment' },
 			{ name: 'Delete', value: 'delete', action: 'Delete a portal comment' },
 			{ name: 'Get', value: 'get', action: 'Get a portal comment' },
 			{ name: 'Get Many', value: 'getAll', action: 'Get many portal comments' },
 		],
-		default: 'getAll',
-	},
+		'getAll',
+	),
 ];
 
 export const portalCommentFields: INodeProperties[] = [
-	{
-		displayName: 'Comment ID',
-		name: 'commentID',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(RESOURCE, ['get']),
-	},
+	idField('Comment ID', 'commentID', RESOURCE, ['get']),
 	{
 		displayName: 'Post ID',
 		name: 'postID',
@@ -45,14 +34,7 @@ export const portalCommentFields: INodeProperties[] = [
 		displayOptions: showFor(RESOURCE, ['getAll']),
 		description: 'Optional — filter comments to a single board',
 	},
-	{
-		displayName: 'Return All',
-		name: 'returnAll',
-		type: 'boolean',
-		default: false,
-		displayOptions: showFor(RESOURCE, ['getAll']),
-		description: 'Whether to return all results or only up to a given limit',
-	},
+	returnAllField(RESOURCE),
 	{
 		displayName: 'Limit',
 		name: 'limit',
@@ -104,12 +86,5 @@ export const portalCommentFields: INodeProperties[] = [
 		description:
 			'Whether this comment is only visible internally. Only allowed if the author is a company member.',
 	},
-	{
-		displayName: 'Comment ID',
-		name: 'commentID',
-		type: 'string',
-		default: '',
-		required: true,
-		displayOptions: showFor(RESOURCE, ['delete']),
-	},
+	idField('Comment ID', 'commentID', RESOURCE, ['delete']),
 ];
